@@ -116,7 +116,7 @@ Optional parameters to customize the settings.
     use: 'file',
     flashMode: false,
     thumbnailRatio: 1/6,
-    cameraFacing: 'front' // or 'back',
+    cameraFacing: 'front', // or 'back'
     onBeforeDraw: function(frame){
       // do something before drawing a frame
       // frame.image; // HTMLImageElement
