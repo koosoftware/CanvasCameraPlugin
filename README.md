@@ -210,5 +210,5 @@ This software is released under the [MIT License][mit-license].
 [npm-url]: https://www.npmjs.com/package/com.virtuoworks.cordova-plugin-canvascamera
 [downloads-image]: https://img.shields.io/npm/dm/com.virtuoworks.cordova-plugin-canvascamera.svg
 [downloads-url]: https://www.npmjs.com/package/com.virtuoworks.cordova-plugin-canvascamera
-[codacy-image]: https://api.codacy.com/project/badge/Grade/dcccd741d63d4b0ea51ae3ccb2cd7d89
-[codacy-url]: https://www.codacy.com/app/VirtuoWorks/CanvasCameraPlugin?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=VirtuoWorks/CanvasCameraPlugin&amp;utm_campaign=Badge_Grade
+[codacy-image]: https://app.codacy.com/project/badge/Grade/d2f08eb3f8e545bbbe253c0e4212b309
+[codacy-url]: https://www.codacy.com/gh/VirtuoWorks/CanvasCameraPlugin/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=VirtuoWorks/CanvasCameraPlugin&amp;utm_campaign=Badge_Grade
