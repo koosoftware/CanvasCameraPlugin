@@ -1,18 +1,26 @@
 module.exports = {
-  'env': {
-    'browser': true,
-    'es6': true,
+  "env": {
+    "browser": true,
+    "es6": true,
   },
-  'extends': [
-    'google',
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
   ],
-  'globals': {
-    'Atomics': 'readonly',
-    'SharedArrayBuffer': 'readonly',
+  "extends": [
+    "google",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly",
   },
-  'parserOptions': {
-    'ecmaVersion': 2018,
+  "parserOptions": {
+    "ecmaVersion": 2018,
   },
-  'rules': {
-  },
+  "rules": {
+    "@typescript-eslint/rule-name": "error"
+  }
 };
