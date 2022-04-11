@@ -133,11 +133,17 @@ declare class Renderer {
 }
 declare function withEvents(constructor: Function): void;
 declare class CanvasCamera {
+    static instance: CanvasCamera;
     onCapture: CallbackFunction | null;
     nativeClass: string;
     canvas: Renderers;
     options: CanvasCameraUserOptions;
     constructor();
+    static getInstance(): CanvasCamera;
+    static start(userOptions: CanvasCameraUserOptions, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
+    static stop(onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
+    static cameraPosition(cameraFacing: CameraFacing, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
+    static flashMode(flashMode: boolean, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
     dispatch(this: CanvasCamera, eventName: CanvasCameraEventName, caller: CanvasCamera | Renderer | Frame, frame?: Frame): void;
     initialize(fcanvas: HTMLCanvasElement | CanvasElements, tcanvas?: HTMLCanvasElement): void;
     start(userOptions: CanvasCameraUserOptions, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;

@@ -2,8 +2,8 @@ const exec = require('cordova/exec');
 
 // CanvasCamera type definitions
 interface Window {
-    Ionic?: any;
-    CanvasCamera: CanvasCamera;
+  Ionic?: any;
+  CanvasCamera: CanvasCamera;
 }
 
 type UISize = CanvasSize;
@@ -107,7 +107,6 @@ interface CanvasCameraDataImage {
   orientation?: Orientation;
   timestamp?: number;
 }
-
 
 /**
  * Represents a Frame.
@@ -497,7 +496,6 @@ class Renderer {
   }
 }
 
-
 /**
  * Decorator for CanvasCamera
  *
@@ -527,7 +525,6 @@ function withEvents(constructor: Function) {
   });
 }
 
-
 /**
  * Represents a CanvasCamera.
  *
@@ -536,12 +533,51 @@ function withEvents(constructor: Function) {
  */
 @withEvents
 class CanvasCamera {
+  public static instance: CanvasCamera;
   public onCapture: CallbackFunction | null = null;
   public nativeClass = 'CanvasCamera';
   public canvas: Renderers = {} as Renderers;
   public options: CanvasCameraUserOptions = {} as CanvasCameraUserOptions;
 
   constructor() {}
+
+  static getInstance() {
+    if (this.instance && this.instance instanceof CanvasCamera) {
+      return this.instance;
+    }
+    return (this.instance = new CanvasCamera());
+  }
+
+  static start(
+    userOptions: CanvasCameraUserOptions,
+    onError?: PluginResultCallbackFunction,
+    onSuccess?: PluginResultCallbackFunction
+  ) {
+    return this.getInstance().start(userOptions, onError, onSuccess);
+  }
+
+  static stop(
+    onError?: PluginResultCallbackFunction,
+    onSuccess?: PluginResultCallbackFunction
+  ) {
+    return this.getInstance().stop(onError, onSuccess);
+  }
+
+  static cameraPosition(
+    cameraFacing: CameraFacing,
+    onError?: PluginResultCallbackFunction,
+    onSuccess?: PluginResultCallbackFunction
+  ) {
+    return this.getInstance().cameraPosition(cameraFacing, onError, onSuccess);
+  }
+
+  static flashMode(
+    flashMode: boolean,
+    onError?: PluginResultCallbackFunction,
+    onSuccess?: PluginResultCallbackFunction
+  ) {
+    return this.getInstance().flashMode(flashMode, onError, onSuccess);
+  }
 
   public dispatch(
     this: CanvasCamera,
@@ -868,4 +904,4 @@ class CanvasCamera {
   }
 }
 
-module.exports = new CanvasCamera();
+module.exports = CanvasCamera;

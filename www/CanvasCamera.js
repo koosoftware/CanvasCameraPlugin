@@ -310,6 +310,25 @@ var CanvasCamera = (function () {
         this.canvas = {};
         this.options = {};
     }
+    CanvasCamera_1 = CanvasCamera;
+    CanvasCamera.getInstance = function () {
+        if (this.instance && this.instance instanceof CanvasCamera_1) {
+            return this.instance;
+        }
+        return (this.instance = new CanvasCamera_1());
+    };
+    CanvasCamera.start = function (userOptions, onError, onSuccess) {
+        return this.getInstance().start(userOptions, onError, onSuccess);
+    };
+    CanvasCamera.stop = function (onError, onSuccess) {
+        return this.getInstance().stop(onError, onSuccess);
+    };
+    CanvasCamera.cameraPosition = function (cameraFacing, onError, onSuccess) {
+        return this.getInstance().cameraPosition(cameraFacing, onError, onSuccess);
+    };
+    CanvasCamera.flashMode = function (flashMode, onError, onSuccess) {
+        return this.getInstance().flashMode(flashMode, onError, onSuccess);
+    };
     CanvasCamera.prototype.dispatch = function (eventName, caller, frame) {
         var listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
         var event = new CustomEvent(listenerName, {
@@ -544,11 +563,12 @@ var CanvasCamera = (function () {
         }
         return this;
     };
-    CanvasCamera = __decorate([
+    var CanvasCamera_1;
+    CanvasCamera = CanvasCamera_1 = __decorate([
         withEvents,
         __metadata("design:paramtypes", [])
     ], CanvasCamera);
     return CanvasCamera;
 }());
-module.exports = new CanvasCamera();
+module.exports = CanvasCamera;
 //# sourceMappingURL=canvascamera.js.map
