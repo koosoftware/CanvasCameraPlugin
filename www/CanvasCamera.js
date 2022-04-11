@@ -111,11 +111,11 @@ var Renderer = (function () {
         return this;
     };
     Renderer.prototype.draw = function (frame) {
-        this.canvasCamera.dispatch('beforeframerendering', this, frame);
         if (frame && this.context) {
+            this.canvasCamera.dispatch('beforeframerendering', this, frame);
             this.context.drawImage(frame.image, frame.sx, frame.sy, frame.sWidth, frame.sHeight, frame.dx, frame.dy, frame.dWidth, frame.dHeight);
+            this.canvasCamera.dispatch('afterframerendering', this, frame);
         }
-        this.canvasCamera.dispatch('afterframerendering', this, frame);
         return this;
     };
     Renderer.prototype.bufferize = function (data) {

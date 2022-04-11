@@ -3,6 +3,7 @@ const exec = require('cordova/exec');
 // CanvasCamera type definitions
 interface Window {
     Ionic?: any;
+    CanvasCamera: CanvasCamera;
 }
 
 type UISize = CanvasSize;

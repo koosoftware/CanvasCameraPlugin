@@ -1,6 +1,7 @@
 declare const exec: any;
 interface Window {
     Ionic?: any;
+    CanvasCamera: CanvasCamera;
 }
 declare type UISize = CanvasSize;
 declare type UseImageAs = 'data' | 'file';
