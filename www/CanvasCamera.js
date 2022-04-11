@@ -285,6 +285,11 @@ var Renderer = (function () {
     };
     return Renderer;
 }());
+var WithEvents = (function () {
+    function WithEvents() {
+    }
+    return WithEvents;
+}());
 function withEvents(constructor) {
     var events = [
         'beforeFrameRendering',
@@ -439,7 +444,7 @@ var CanvasCamera = (function () {
     CanvasCamera.prototype.enableRenderers = function () {
         var _a, _b;
         if (this.canvas && 'object' === typeof this.canvas) {
-            for (var renderer in Object.entries) {
+            for (var renderer in this.canvas) {
                 if (this.canvas.hasOwnProperty(renderer) &&
                     this.canvas[renderer] instanceof Renderer) {
                     if ((_a = this.canvas[renderer]) === null || _a === void 0 ? void 0 : _a.disabled()) {

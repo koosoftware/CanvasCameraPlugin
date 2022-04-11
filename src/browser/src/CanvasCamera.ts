@@ -495,7 +495,14 @@ class Renderer {
     return this;
   }
 }
-
+abstract class WithEvents {
+    abstract beforeFrameRendering(listener: CallbackFunction): void;
+    abstract afterFrameRendering(listener: CallbackFunction): void;
+    abstract beforeFrameInitialization(listener: CallbackFunction): void;
+    abstract afterFrameInitialization(listener: CallbackFunction): void;
+    abstract beforeRenderingPresets(listener: CallbackFunction): void;
+    abstract afterRenderingPresets(listener: CallbackFunction): void;
+}
 /**
  * Decorator for CanvasCamera
  *
@@ -754,7 +761,7 @@ class CanvasCamera {
 
   enableRenderers() {
     if (this.canvas && 'object' === typeof this.canvas) {
-      for (const renderer in Object.entries) {
+      for (const renderer in this.canvas) {
         if (
           this.canvas.hasOwnProperty(renderer) &&
           this.canvas[renderer] instanceof Renderer

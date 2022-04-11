@@ -131,6 +131,14 @@ declare class Renderer {
     setOnBeforeDraw(onBeforeDraw: CallbackFunction): this;
     setOnAfterDraw(onAfterDraw: CallbackFunction): this;
 }
+declare abstract class WithEvents {
+    abstract beforeFrameRendering(listener: CallbackFunction): void;
+    abstract afterFrameRendering(listener: CallbackFunction): void;
+    abstract beforeFrameInitialization(listener: CallbackFunction): void;
+    abstract afterFrameInitialization(listener: CallbackFunction): void;
+    abstract beforeRenderingPresets(listener: CallbackFunction): void;
+    abstract afterRenderingPresets(listener: CallbackFunction): void;
+}
 declare function withEvents(constructor: Function): void;
 declare class CanvasCamera {
     static instance: CanvasCamera;
