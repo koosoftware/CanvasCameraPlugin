@@ -1,13 +1,19 @@
 "use strict";
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var exec = require('cordova/exec');
 var Frame = (function () {
     function Frame(image, element, renderer) {
@@ -290,37 +296,24 @@ var WithEvents = (function () {
     }
     return WithEvents;
 }());
-function withEvents(constructor) {
-    var events = [
-        'beforeFrameRendering',
-        'afterFrameRendering',
-        'beforeFrameInitialization',
-        'afterFrameInitialization',
-        'beforeRenderingPresets',
-        'afterRenderingPresets',
-    ];
-    events.forEach(function (eventName) {
-        constructor.prototype[eventName] = function (listener) {
-            var listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
-            window.addEventListener(listenerName, function (e) {
-                listener.call(e.detail.caller, [e, e.detail.data]);
-            }.bind(this));
-        };
-    });
-}
-var CanvasCamera = (function () {
+var CanvasCamera = (function (_super) {
+    __extends(CanvasCamera, _super);
     function CanvasCamera() {
-        this.onCapture = null;
-        this.nativeClass = 'CanvasCamera';
-        this.canvas = {};
-        this.options = {};
+        var _this = _super.call(this) || this;
+        _this.onCapture = null;
+        _this.nativeClass = 'CanvasCamera';
+        _this.canvas = {};
+        _this.options = {};
+        return _this;
     }
-    CanvasCamera_1 = CanvasCamera;
     CanvasCamera.getInstance = function () {
-        if (this.instance && this.instance instanceof CanvasCamera_1) {
+        if (this.instance && this.instance instanceof CanvasCamera) {
             return this.instance;
         }
-        return (this.instance = new CanvasCamera_1());
+        return (this.instance = new CanvasCamera());
+    };
+    CanvasCamera.initialize = function (fcanvas, tcanvas) {
+        return this.getInstance().initialize(fcanvas, tcanvas);
     };
     CanvasCamera.start = function (userOptions, onError, onSuccess) {
         return this.getInstance().start(userOptions, onError, onSuccess);
@@ -333,6 +326,30 @@ var CanvasCamera = (function () {
     };
     CanvasCamera.flashMode = function (flashMode, onError, onSuccess) {
         return this.getInstance().flashMode(flashMode, onError, onSuccess);
+    };
+    CanvasCamera.prototype.beforeFrameRendering = function (listener) {
+        this.triggerEvent('beforeFrameRendering', listener);
+    };
+    CanvasCamera.prototype.afterFrameRendering = function (listener) {
+        this.triggerEvent('afterFrameRendering', listener);
+    };
+    CanvasCamera.prototype.beforeFrameInitialization = function (listener) {
+        this.triggerEvent('beforeFrameInitialization', listener);
+    };
+    CanvasCamera.prototype.afterFrameInitialization = function (listener) {
+        this.triggerEvent('afterFrameInitialization', listener);
+    };
+    CanvasCamera.prototype.beforeRenderingPresets = function (listener) {
+        this.triggerEvent('beforeRenderingPresets', listener);
+    };
+    CanvasCamera.prototype.afterRenderingPresets = function (listener) {
+        this.triggerEvent('afterRenderingPresets', listener);
+    };
+    CanvasCamera.prototype.triggerEvent = function (eventName, listener) {
+        var listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
+        window.addEventListener(listenerName, function (e) {
+            listener.call(e.detail.caller, [e, e.detail.data]);
+        }.bind(this));
     };
     CanvasCamera.prototype.dispatch = function (eventName, caller, frame) {
         var listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
@@ -568,12 +585,7 @@ var CanvasCamera = (function () {
         }
         return this;
     };
-    var CanvasCamera_1;
-    CanvasCamera = CanvasCamera_1 = __decorate([
-        withEvents,
-        __metadata("design:paramtypes", [])
-    ], CanvasCamera);
     return CanvasCamera;
-}());
+}(WithEvents));
 module.exports = CanvasCamera;
 //# sourceMappingURL=canvascamera.js.map

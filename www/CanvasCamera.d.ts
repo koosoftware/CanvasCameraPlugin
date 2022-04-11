@@ -139,8 +139,7 @@ declare abstract class WithEvents {
     abstract beforeRenderingPresets(listener: CallbackFunction): void;
     abstract afterRenderingPresets(listener: CallbackFunction): void;
 }
-declare function withEvents(constructor: Function): void;
-declare class CanvasCamera {
+declare class CanvasCamera extends WithEvents {
     static instance: CanvasCamera;
     onCapture: CallbackFunction | null;
     nativeClass: string;
@@ -148,10 +147,18 @@ declare class CanvasCamera {
     options: CanvasCameraUserOptions;
     constructor();
     static getInstance(): CanvasCamera;
+    static initialize(fcanvas: HTMLCanvasElement | CanvasElements, tcanvas?: HTMLCanvasElement): void;
     static start(userOptions: CanvasCameraUserOptions, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
     static stop(onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
     static cameraPosition(cameraFacing: CameraFacing, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
     static flashMode(flashMode: boolean, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
+    beforeFrameRendering(listener: CallbackFunction): void;
+    afterFrameRendering(listener: CallbackFunction): void;
+    beforeFrameInitialization(listener: CallbackFunction): void;
+    afterFrameInitialization(listener: CallbackFunction): void;
+    beforeRenderingPresets(listener: CallbackFunction): void;
+    afterRenderingPresets(listener: CallbackFunction): void;
+    private triggerEvent;
     dispatch(this: CanvasCamera, eventName: CanvasCameraEventName, caller: CanvasCamera | Renderer | Frame, frame?: Frame): void;
     initialize(fcanvas: HTMLCanvasElement | CanvasElements, tcanvas?: HTMLCanvasElement): void;
     start(userOptions: CanvasCameraUserOptions, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;

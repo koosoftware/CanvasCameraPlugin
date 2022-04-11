@@ -495,41 +495,14 @@ class Renderer {
     return this;
   }
 }
-abstract class WithEvents {
-    abstract beforeFrameRendering(listener: CallbackFunction): void;
-    abstract afterFrameRendering(listener: CallbackFunction): void;
-    abstract beforeFrameInitialization(listener: CallbackFunction): void;
-    abstract afterFrameInitialization(listener: CallbackFunction): void;
-    abstract beforeRenderingPresets(listener: CallbackFunction): void;
-    abstract afterRenderingPresets(listener: CallbackFunction): void;
-}
-/**
- * Decorator for CanvasCamera
- *
- * @export
- * @param {Function} constructor
- */
-function withEvents(constructor: Function) {
-  const events: CanvasCameraEventMethodName[] = [
-    'beforeFrameRendering',
-    'afterFrameRendering',
-    'beforeFrameInitialization',
-    'afterFrameInitialization',
-    'beforeRenderingPresets',
-    'afterRenderingPresets',
-  ];
 
-  events.forEach(function (eventName) {
-    constructor.prototype[eventName] = function (listener: CallbackFunction) {
-      const listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
-      window.addEventListener(
-        listenerName,
-        function (e: CustomEvent) {
-          listener.call(e.detail.caller, [e, e.detail.data]);
-        }.bind(this) as EventListener
-      );
-    };
-  });
+abstract class WithEvents {
+  abstract beforeFrameRendering(listener: CallbackFunction): void;
+  abstract afterFrameRendering(listener: CallbackFunction): void;
+  abstract beforeFrameInitialization(listener: CallbackFunction): void;
+  abstract afterFrameInitialization(listener: CallbackFunction): void;
+  abstract beforeRenderingPresets(listener: CallbackFunction): void;
+  abstract afterRenderingPresets(listener: CallbackFunction): void;
 }
 
 /**
@@ -538,21 +511,29 @@ function withEvents(constructor: Function) {
  * @export
  * @class CanvasCamera
  */
-@withEvents
-class CanvasCamera {
+class CanvasCamera extends WithEvents {
   public static instance: CanvasCamera;
   public onCapture: CallbackFunction | null = null;
   public nativeClass = 'CanvasCamera';
   public canvas: Renderers = {} as Renderers;
   public options: CanvasCameraUserOptions = {} as CanvasCameraUserOptions;
 
-  constructor() {}
+  constructor() {
+    super();
+  }
 
   static getInstance() {
     if (this.instance && this.instance instanceof CanvasCamera) {
       return this.instance;
     }
     return (this.instance = new CanvasCamera());
+  }
+
+  static initialize(
+    fcanvas: HTMLCanvasElement | CanvasElements,
+    tcanvas?: HTMLCanvasElement
+  ) {
+    return this.getInstance().initialize(fcanvas, tcanvas);
   }
 
   static start(
@@ -584,6 +565,43 @@ class CanvasCamera {
     onSuccess?: PluginResultCallbackFunction
   ) {
     return this.getInstance().flashMode(flashMode, onError, onSuccess);
+  }
+
+  beforeFrameRendering(listener: CallbackFunction) {
+    this.triggerEvent('beforeFrameRendering', listener);
+  }
+
+  afterFrameRendering(listener: CallbackFunction) {
+    this.triggerEvent('afterFrameRendering', listener);
+  }
+
+  beforeFrameInitialization(listener: CallbackFunction) {
+    this.triggerEvent('beforeFrameInitialization', listener);
+  }
+
+  afterFrameInitialization(listener: CallbackFunction) {
+    this.triggerEvent('afterFrameInitialization', listener);
+  }
+
+  beforeRenderingPresets(listener: CallbackFunction) {
+    this.triggerEvent('beforeRenderingPresets', listener);
+  }
+
+  afterRenderingPresets(listener: CallbackFunction) {
+    this.triggerEvent('afterRenderingPresets', listener);
+  }
+
+  private triggerEvent(
+    eventName: CanvasCameraEventMethodName,
+    listener: CallbackFunction
+  ) {
+    const listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
+    window.addEventListener(
+      listenerName,
+      function (e: CustomEvent) {
+        listener.call(e.detail.caller, [e, e.detail.data]);
+      }.bind(this) as EventListener
+    );
   }
 
   public dispatch(
