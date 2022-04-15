@@ -1,28 +1,29 @@
-declare const exec: any;
-interface Window {
-    Ionic?: any;
-    CanvasCamera: CanvasCamera;
+declare global {
+    interface Window {
+        Ionic?: any;
+        CanvasCamera: CanvasCamera;
+    }
 }
-declare type CanvasCameraUISize = CanvasCameraCanvasSize;
-declare type CanvasCameraUseImageAs = 'data' | 'file';
-declare type CanvasCameraCameraFacing = 'front' | 'back';
-declare type CanvasCameraPluginResultCallbackFunction = (data: CanvasCameraData) => void;
-declare type CanvasCameraEventMethodName = 'beforeFrameRendering' | 'afterFrameRendering' | 'beforeFrameInitialization' | 'afterFrameInitialization' | 'beforeRenderingPresets' | 'afterRenderingPresets';
-declare type CanvasCameraEventName = Lowercase<CanvasCameraEventMethodName>;
-interface CanvasCameraCanvasElements {
+export declare type CanvasCameraUISize = CanvasCameraCanvasSize;
+export declare type CanvasCameraUseImageAs = 'data' | 'file';
+export declare type CanvasCameraCameraFacing = 'front' | 'back';
+export declare type CanvasCameraPluginResultCallbackFunction = (data: CanvasCameraData) => void;
+export declare type CanvasCameraEventMethodName = 'beforeFrameRendering' | 'afterFrameRendering' | 'beforeFrameInitialization' | 'afterFrameInitialization' | 'beforeRenderingPresets' | 'afterRenderingPresets';
+export declare type CanvasCameraEventName = Lowercase<CanvasCameraEventMethodName>;
+export interface CanvasCameraCanvasElements {
     fullsize: HTMLCanvasElement;
     thumbnail?: HTMLCanvasElement;
 }
-interface CanvasCameraRenderers {
+export interface CanvasCameraRenderers {
     fullsize: CanvasCameraRenderer;
     thumbnail?: CanvasCameraRenderer;
     [key: string]: CanvasCameraRenderer | undefined;
 }
-interface CanvasCameraEventDetail {
+export interface CanvasCameraEventDetail {
     context: CanvasCamera | CanvasCameraRenderer | CanvasCameraFrame;
     data: CanvasCamera | CanvasCameraRenderer | CanvasCameraFrame;
 }
-interface CanvasCameraUserOptions {
+export interface CanvasCameraUserOptions {
     width?: number;
     height?: number;
     cameraFacing?: CanvasCameraCameraFacing;
@@ -42,22 +43,22 @@ interface CanvasCameraUserOptions {
     onAfterDraw?: <F>(frame: F) => void;
     onBeforeDraw?: <F>(frame: F) => void;
 }
-interface CanvasCameraDataImages {
+export interface CanvasCameraDataImages {
     orientation?: CanvasCameraOrientation;
     fullsize?: CanvasCameraDataImage;
     thumbnail: CanvasCameraDataImage;
 }
-interface CanvasCameraDataOutput {
+export interface CanvasCameraDataOutput {
     images?: CanvasCameraDataImages;
 }
-interface CanvasCameraCaptureId {
+export interface CanvasCameraCaptureId {
     id?: number;
 }
-interface CanvasCameraCaptureFps {
+export interface CanvasCameraCaptureFps {
     min?: number;
     max?: number;
 }
-interface CanvasCameraCaptureSettings {
+export interface CanvasCameraCaptureSettings {
     width?: number;
     height?: number;
     format?: number;
@@ -66,20 +67,20 @@ interface CanvasCameraCaptureSettings {
     fps?: CanvasCameraCaptureFps | number;
     camera?: CanvasCameraCaptureId;
 }
-interface CanvasCameraData {
+export interface CanvasCameraData {
     message?: string;
     options?: CanvasCameraUserOptions;
     preview?: CanvasCameraCaptureSettings;
     output?: CanvasCameraDataOutput;
 }
-declare type CanvasCameraOrientation = 'portrait' | 'landscape';
-declare type CanvasCameraEventListener = <D>(data: D) => void;
-interface CanvasCameraCanvasSize {
+export declare type CanvasCameraOrientation = 'portrait' | 'landscape';
+export declare type CanvasCameraEventListener = <D>(data: D) => void;
+export interface CanvasCameraCanvasSize {
     height: number;
     width: number;
     auto?: boolean;
 }
-interface CanvasCameraDataImage {
+export interface CanvasCameraDataImage {
     data?: string;
     file?: string;
     path?: string;
@@ -87,7 +88,7 @@ interface CanvasCameraDataImage {
     orientation?: CanvasCameraOrientation;
     timestamp?: number;
 }
-declare class CanvasCameraFrame {
+export declare class CanvasCameraFrame {
     ratio: number;
     sx: number;
     sy: number;
@@ -104,7 +105,7 @@ declare class CanvasCameraFrame {
     initialize(): this;
     recycle(): void;
 }
-declare class CanvasCameraRenderer {
+export declare class CanvasCameraRenderer {
     data: CanvasCameraDataImage | undefined;
     size: CanvasCameraCanvasSize | undefined;
     image: HTMLImageElement | undefined;
@@ -135,7 +136,7 @@ declare class CanvasCameraRenderer {
     setOnBeforeDraw(onBeforeDraw: CanvasCameraEventListener): this;
     setOnAfterDraw(onAfterDraw: CanvasCameraEventListener): this;
 }
-declare abstract class CanvasCameraWithEvents {
+export declare abstract class CanvasCameraWithEvents {
     abstract beforeFrameRendering(listener: CanvasCameraEventListener): void;
     abstract afterFrameRendering(listener: CanvasCameraEventListener): void;
     abstract beforeFrameInitialization(listener: CanvasCameraEventListener): void;
@@ -143,7 +144,7 @@ declare abstract class CanvasCameraWithEvents {
     abstract beforeRenderingPresets(listener: CanvasCameraEventListener): void;
     abstract afterRenderingPresets(listener: CanvasCameraEventListener): void;
 }
-declare class CanvasCamera extends CanvasCameraWithEvents {
+export default class CanvasCamera extends CanvasCameraWithEvents {
     static instance: CanvasCamera;
     onCapture: CanvasCameraEventListener | undefined;
     nativeClass: string;

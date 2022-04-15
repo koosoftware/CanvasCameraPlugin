@@ -14,6 +14,8 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CanvasCameraWithEvents = exports.CanvasCameraRenderer = exports.CanvasCameraFrame = void 0;
 var exec = require('cordova/exec');
 var CanvasCameraFrame = (function () {
     function CanvasCameraFrame(image, element, renderer) {
@@ -61,6 +63,7 @@ var CanvasCameraFrame = (function () {
     };
     return CanvasCameraFrame;
 }());
+exports.CanvasCameraFrame = CanvasCameraFrame;
 var CanvasCameraRenderer = (function () {
     function CanvasCameraRenderer(element, canvasCamera) {
         this.buffer = [];
@@ -292,11 +295,13 @@ var CanvasCameraRenderer = (function () {
     };
     return CanvasCameraRenderer;
 }());
+exports.CanvasCameraRenderer = CanvasCameraRenderer;
 var CanvasCameraWithEvents = (function () {
     function CanvasCameraWithEvents() {
     }
     return CanvasCameraWithEvents;
 }());
+exports.CanvasCameraWithEvents = CanvasCameraWithEvents;
 var CanvasCamera = (function (_super) {
     __extends(CanvasCamera, _super);
     function CanvasCamera() {
@@ -375,7 +380,7 @@ var CanvasCamera = (function (_super) {
         var event = new CustomEvent(listenerName, {
             detail: {
                 context: context,
-                data: data
+                data: data,
             },
         });
         window.dispatchEvent(event);
@@ -606,5 +611,6 @@ var CanvasCamera = (function (_super) {
     };
     return CanvasCamera;
 }(CanvasCameraWithEvents));
+exports.default = CanvasCamera;
 module.exports = CanvasCamera;
 //# sourceMappingURL=canvascamera.js.map
