@@ -1,8 +1,11 @@
-const exec = require('cordova/exec');
+import { exec } from 'cordova';
 
 declare global {
   interface Window {
     Ionic?: any;
+    plugin: {
+      CanvasCamera: CanvasCamera;
+    };
     CanvasCamera: CanvasCamera;
   }
 }
