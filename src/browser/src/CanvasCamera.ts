@@ -6,11 +6,11 @@ interface Window {
   CanvasCamera: CanvasCamera;
 }
 
-type UISize = CanvasSize;
-type UseImageAs = 'data' | 'file';
-type CameraFacing = 'front' | 'back';
+type CanvasCameraUISize = CanvasCameraCanvasSize;
+type CanvasCameraUseImageAs = 'data' | 'file';
+type CanvasCameraCameraFacing = 'front' | 'back';
 
-type PluginResultCallbackFunction = (data: CanvasCameraData) => void;
+type CanvasCameraPluginResultCallbackFunction = (data: CanvasCameraData) => void;
 
 type CanvasCameraEventMethodName =
   | 'beforeFrameRendering'
@@ -21,21 +21,25 @@ type CanvasCameraEventMethodName =
   | 'afterRenderingPresets';
 
 type CanvasCameraEventName = Lowercase<CanvasCameraEventMethodName>;
-interface CanvasElements {
+interface CanvasCameraCanvasElements {
   fullsize: HTMLCanvasElement;
   thumbnail?: HTMLCanvasElement;
 }
 
-interface Renderers {
-  fullsize: Renderer;
-  thumbnail?: Renderer;
-  [key: string]: Renderer | undefined;
+interface CanvasCameraRenderers {
+  fullsize: CanvasCameraRenderer;
+  thumbnail?: CanvasCameraRenderer;
+  [key: string]: CanvasCameraRenderer | undefined;
 }
 
+interface CanvasCameraEventDetail {
+  context: CanvasCamera | CanvasCameraRenderer | CanvasCameraFrame;
+  data: CanvasCamera | CanvasCameraRenderer | CanvasCameraFrame;
+}
 interface CanvasCameraUserOptions {
   width?: number;
   height?: number;
-  cameraFacing?: CameraFacing;
+  cameraFacing?: CanvasCameraCameraFacing;
   canvas?: {
     width?: number;
     height?: number;
@@ -44,17 +48,17 @@ interface CanvasCameraUserOptions {
     width?: number;
     height?: number;
   };
-  use?: UseImageAs;
+  use?: CanvasCameraUseImageAs;
   fps?: number;
   flashMode?: boolean;
   hasThumbnail?: boolean;
   thumbnailRatio?: number;
-  onAfterDraw?: (frame?: Frame) => void;
-  onBeforeDraw?: (frame?: Frame) => void;
+  onAfterDraw?: <F>(frame: F) => void;
+  onBeforeDraw?: <F>(frame: F) => void;
 }
 
 interface CanvasCameraDataImages {
-  orientation?: Orientation;
+  orientation?: CanvasCameraOrientation;
   fullsize?: CanvasCameraDataImage;
   thumbnail: CanvasCameraDataImage;
 }
@@ -89,11 +93,11 @@ interface CanvasCameraData {
   output?: CanvasCameraDataOutput;
 }
 
-// Renderer type definitions :
-type Orientation = 'portrait' | 'landscape';
-type CallbackFunction = (data: any) => void;
+// CanvasCameraRenderer type definitions :
+type CanvasCameraOrientation = 'portrait' | 'landscape';
+type CanvasCameraEventListener = <D>(data: D) => void;
 
-interface CanvasSize {
+interface CanvasCameraCanvasSize {
   height: number;
   width: number;
   auto?: boolean;
@@ -104,7 +108,7 @@ interface CanvasCameraDataImage {
   file?: string;
   path?: string;
   rotation?: number;
-  orientation?: Orientation;
+  orientation?: CanvasCameraOrientation;
   timestamp?: number;
 }
 
@@ -112,9 +116,9 @@ interface CanvasCameraDataImage {
  * Represents a Frame.
  *
  * @export
- * @class Frame
+ * @class CanvasCameraFrame
  */
-class Frame {
+class CanvasCameraFrame {
   public ratio = 0;
 
   public sx = 0;
@@ -126,14 +130,14 @@ class Frame {
   public dWidth = 0;
   public dHeight = 0;
 
-  public renderer: Renderer;
+  public renderer: CanvasCameraRenderer;
   public image: HTMLImageElement;
   public element: HTMLCanvasElement;
 
   constructor(
     image: HTMLImageElement,
     element: HTMLCanvasElement,
-    renderer: Renderer
+    renderer: CanvasCameraRenderer
   ) {
     this.image = image;
     this.element = element;
@@ -201,14 +205,14 @@ class Frame {
  * Represents a Renderer.
  *
  * @export
- * @class Renderer
+ * @class CanvasCameraRenderer
  */
-class Renderer {
+class CanvasCameraRenderer {
   public data: CanvasCameraDataImage | undefined;
-  public size: CanvasSize | undefined;
+  public size: CanvasCameraCanvasSize | undefined;
   public image: HTMLImageElement | undefined;
   public context: CanvasRenderingContext2D | undefined | null;
-  public orientation: Orientation | undefined;
+  public orientation: CanvasCameraOrientation | undefined;
   public buffer: CanvasCameraDataImage[] = [];
   public available = true;
   public fullscreen = false;
@@ -216,8 +220,8 @@ class Renderer {
   public element: HTMLCanvasElement;
   public canvasCamera: CanvasCamera;
 
-  public onAfterDraw: CallbackFunction = () => {};
-  public onBeforeDraw: CallbackFunction = () => {};
+  public onAfterDraw: CanvasCameraEventListener | undefined;
+  public onBeforeDraw: CanvasCameraEventListener | undefined;
 
   constructor(element: HTMLCanvasElement, canvasCamera: CanvasCamera) {
     this.element = element;
@@ -233,7 +237,7 @@ class Renderer {
 
       this.image.addEventListener('load', () => {
         if (this.image) {
-          let frame: Frame | null = this.canvasCamera.createFrame(
+          let frame: CanvasCameraFrame | null = this.canvasCamera.createFrame(
             this.image,
             this.element,
             this
@@ -242,11 +246,11 @@ class Renderer {
           if (frame) {
             this.resize().clear();
             if (this.onBeforeDraw) {
-              this.onBeforeDraw(frame);
+              this.onBeforeDraw<CanvasCameraFrame>(frame);
             }
             this.draw(frame);
             if (this.onAfterDraw) {
-              this.onAfterDraw(frame);
+              this.onAfterDraw<CanvasCameraFrame>(frame);
             }
 
             frame.recycle();
@@ -282,7 +286,7 @@ class Renderer {
     return this;
   }
 
-  draw(frame: Frame) {
+  draw(frame: CanvasCameraFrame) {
     if (frame && this.context) {
       this.canvasCamera.dispatch('beforeframerendering', this, frame);
 
@@ -316,7 +320,10 @@ class Renderer {
     if (this.enabled()) {
       window.requestAnimationFrame(() => {
         if (this.buffer.length) {
-          this.render(this.buffer.pop());
+          const data = this.buffer.pop();
+          if (data) {
+            this.render(data);
+          }
           this.buffer = [];
         }
       });
@@ -325,7 +332,7 @@ class Renderer {
     return this;
   }
 
-  render(data: CanvasCameraDataImage | undefined) {
+  render(data: CanvasCameraDataImage) {
     if (this.enabled()) {
       if (
         this.canvasCamera &&
@@ -461,7 +468,7 @@ class Renderer {
     return this;
   }
 
-  setSize(size: CanvasSize, auto?: boolean) {
+  setSize(size: CanvasCameraCanvasSize, auto?: boolean) {
     this.fullscreen = !!auto || false;
     if (size && size.width && size.height) {
       if (!isNaN(Number(size.width)) && !isNaN(Number(size.height))) {
@@ -481,14 +488,14 @@ class Renderer {
     return this;
   }
 
-  setOnBeforeDraw(onBeforeDraw: CallbackFunction) {
+  setOnBeforeDraw(onBeforeDraw: CanvasCameraEventListener) {
     if (onBeforeDraw && typeof onBeforeDraw === 'function') {
       this.onBeforeDraw = onBeforeDraw;
     }
     return this;
   }
 
-  setOnAfterDraw(onAfterDraw: CallbackFunction) {
+  setOnAfterDraw(onAfterDraw: CanvasCameraEventListener) {
     if (onAfterDraw && typeof onAfterDraw === 'function') {
       this.onAfterDraw = onAfterDraw;
     }
@@ -496,13 +503,13 @@ class Renderer {
   }
 }
 
-abstract class WithEvents {
-  abstract beforeFrameRendering(listener: CallbackFunction): void;
-  abstract afterFrameRendering(listener: CallbackFunction): void;
-  abstract beforeFrameInitialization(listener: CallbackFunction): void;
-  abstract afterFrameInitialization(listener: CallbackFunction): void;
-  abstract beforeRenderingPresets(listener: CallbackFunction): void;
-  abstract afterRenderingPresets(listener: CallbackFunction): void;
+abstract class CanvasCameraWithEvents {
+  abstract beforeFrameRendering(listener: CanvasCameraEventListener): void;
+  abstract afterFrameRendering(listener: CanvasCameraEventListener): void;
+  abstract beforeFrameInitialization(listener: CanvasCameraEventListener): void;
+  abstract afterFrameInitialization(listener: CanvasCameraEventListener): void;
+  abstract beforeRenderingPresets(listener: CanvasCameraEventListener): void;
+  abstract afterRenderingPresets(listener: CanvasCameraEventListener): void;
 }
 
 /**
@@ -511,11 +518,11 @@ abstract class WithEvents {
  * @export
  * @class CanvasCamera
  */
-class CanvasCamera extends WithEvents {
+class CanvasCamera extends CanvasCameraWithEvents {
   public static instance: CanvasCamera;
-  public onCapture: CallbackFunction | null = null;
+  public onCapture: CanvasCameraEventListener | undefined;
   public nativeClass = 'CanvasCamera';
-  public canvas: Renderers = {} as Renderers;
+  public canvas: CanvasCameraRenderers = {} as CanvasCameraRenderers;
   public options: CanvasCameraUserOptions = {} as CanvasCameraUserOptions;
 
   constructor() {
@@ -530,7 +537,7 @@ class CanvasCamera extends WithEvents {
   }
 
   static initialize(
-    fcanvas: HTMLCanvasElement | CanvasElements,
+    fcanvas: HTMLCanvasElement | CanvasCameraCanvasElements,
     tcanvas?: HTMLCanvasElement
   ) {
     return this.getInstance().initialize(fcanvas, tcanvas);
@@ -538,90 +545,116 @@ class CanvasCamera extends WithEvents {
 
   static start(
     userOptions: CanvasCameraUserOptions,
-    onError?: PluginResultCallbackFunction,
-    onSuccess?: PluginResultCallbackFunction
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
   ) {
     return this.getInstance().start(userOptions, onError, onSuccess);
   }
 
   static stop(
-    onError?: PluginResultCallbackFunction,
-    onSuccess?: PluginResultCallbackFunction
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
   ) {
     return this.getInstance().stop(onError, onSuccess);
   }
 
   static cameraPosition(
-    cameraFacing: CameraFacing,
-    onError?: PluginResultCallbackFunction,
-    onSuccess?: PluginResultCallbackFunction
+    cameraFacing: CanvasCameraCameraFacing,
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
   ) {
     return this.getInstance().cameraPosition(cameraFacing, onError, onSuccess);
   }
 
   static flashMode(
     flashMode: boolean,
-    onError?: PluginResultCallbackFunction,
-    onSuccess?: PluginResultCallbackFunction
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
   ) {
     return this.getInstance().flashMode(flashMode, onError, onSuccess);
   }
 
-  beforeFrameRendering(listener: CallbackFunction) {
-    this.triggerEvent('beforeFrameRendering', listener);
+  beforeFrameRendering(listener: CanvasCameraEventListener) {
+    return this.triggerEvent('beforeFrameRendering', listener);
   }
 
-  afterFrameRendering(listener: CallbackFunction) {
-    this.triggerEvent('afterFrameRendering', listener);
+  static beforeFrameRendering(listener: CanvasCameraEventListener) {
+    return this.getInstance().beforeFrameRendering(listener);
   }
 
-  beforeFrameInitialization(listener: CallbackFunction) {
-    this.triggerEvent('beforeFrameInitialization', listener);
+  afterFrameRendering(listener: CanvasCameraEventListener) {
+    return this.triggerEvent('afterFrameRendering', listener);
   }
 
-  afterFrameInitialization(listener: CallbackFunction) {
-    this.triggerEvent('afterFrameInitialization', listener);
+  static afterFrameRendering(listener: CanvasCameraEventListener) {
+    return this.getInstance().afterFrameRendering(listener);
   }
 
-  beforeRenderingPresets(listener: CallbackFunction) {
-    this.triggerEvent('beforeRenderingPresets', listener);
+  beforeFrameInitialization(listener: CanvasCameraEventListener) {
+    return this.triggerEvent('beforeFrameInitialization', listener);
   }
 
-  afterRenderingPresets(listener: CallbackFunction) {
-    this.triggerEvent('afterRenderingPresets', listener);
+  static beforeFrameInitialization(listener: CanvasCameraEventListener) {
+    return this.getInstance().beforeFrameInitialization(listener);
+  }
+
+  afterFrameInitialization(listener: CanvasCameraEventListener) {
+    return this.triggerEvent('afterFrameInitialization', listener);
+  }
+
+  static afterFrameInitialization(listener: CanvasCameraEventListener) {
+    return this.getInstance().afterFrameInitialization(listener);
+  }
+
+  beforeRenderingPresets(listener: CanvasCameraEventListener) {
+    return this.triggerEvent('beforeRenderingPresets', listener);
+  }
+
+  static beforeRenderingPresets(listener: CanvasCameraEventListener) {
+    return this.getInstance().beforeRenderingPresets(listener);
+  }
+
+  afterRenderingPresets(listener: CanvasCameraEventListener) {
+    return this.triggerEvent('afterRenderingPresets', listener);
+  }
+
+  static afterRenderingPresets(listener: CanvasCameraEventListener) {
+    return this.getInstance().afterRenderingPresets(listener);
   }
 
   private triggerEvent(
     eventName: CanvasCameraEventMethodName,
-    listener: CallbackFunction
+    listener: CanvasCameraEventListener
   ) {
     const listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
     window.addEventListener(
       listenerName,
-      function (e: CustomEvent) {
-        listener.call(e.detail.caller, [e, e.detail.data]);
+      function(e: CustomEvent<CanvasCameraEventDetail>) {
+        listener.call(e.detail.context, [e, e.detail.data]);
       }.bind(this) as EventListener
     );
+
+    return this;
   }
 
   public dispatch(
     this: CanvasCamera,
     eventName: CanvasCameraEventName,
-    caller: CanvasCamera | Renderer | Frame,
-    frame?: Frame
+    context: CanvasCamera | CanvasCameraRenderer | CanvasCameraFrame,
+    data?: CanvasCamera | CanvasCameraRenderer | CanvasCameraFrame
   ): void {
     const listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
     const event = new CustomEvent(listenerName, {
       detail: {
-        caller: caller,
-        data: frame || {},
+        context,
+        data
       },
     });
     window.dispatchEvent(event);
   }
 
   initialize(
-    fcanvas: HTMLCanvasElement | CanvasElements,
+    fcanvas: HTMLCanvasElement | CanvasCameraCanvasElements,
     tcanvas?: HTMLCanvasElement
   ) {
     if (fcanvas instanceof HTMLCanvasElement) {
@@ -644,8 +677,8 @@ class CanvasCamera extends WithEvents {
 
   start(
     userOptions: CanvasCameraUserOptions,
-    onError?: PluginResultCallbackFunction,
-    onSuccess?: PluginResultCallbackFunction
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
   ) {
     this.options = userOptions;
     this.setRenderingPresets();
@@ -670,8 +703,8 @@ class CanvasCamera extends WithEvents {
   }
 
   stop(
-    onError?: PluginResultCallbackFunction,
-    onSuccess?: PluginResultCallbackFunction
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
   ) {
     this.disableRenderers();
     exec(
@@ -693,8 +726,8 @@ class CanvasCamera extends WithEvents {
 
   flashMode(
     flashMode: boolean,
-    onError?: PluginResultCallbackFunction,
-    onSuccess?: PluginResultCallbackFunction
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
   ) {
     exec(
       (data: CanvasCameraData) => {
@@ -714,9 +747,9 @@ class CanvasCamera extends WithEvents {
   }
 
   cameraPosition(
-    cameraFacing: CameraFacing,
-    onError?: PluginResultCallbackFunction,
-    onSuccess?: PluginResultCallbackFunction
+    cameraFacing: CanvasCameraCameraFacing,
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
   ) {
     this.disableRenderers();
     exec(
@@ -766,14 +799,14 @@ class CanvasCamera extends WithEvents {
   createFrame(
     image: HTMLImageElement,
     element: HTMLCanvasElement,
-    renderer: Renderer
+    renderer: CanvasCameraRenderer
   ) {
-    const frame = new Frame(image, element, renderer);
+    const frame = new CanvasCameraFrame(image, element, renderer);
     return frame.initialize();
   }
 
   createRenderer(element: HTMLCanvasElement, canvasCamera: CanvasCamera) {
-    const renderer = new Renderer(element, canvasCamera);
+    const renderer = new CanvasCameraRenderer(element, canvasCamera);
     return renderer.initialize();
   }
 
@@ -782,7 +815,7 @@ class CanvasCamera extends WithEvents {
       for (const renderer in this.canvas) {
         if (
           this.canvas.hasOwnProperty(renderer) &&
-          this.canvas[renderer] instanceof Renderer
+          this.canvas[renderer] instanceof CanvasCameraRenderer
         ) {
           if (this.canvas[renderer]?.disabled()) {
             this.canvas[renderer]?.enable();
@@ -797,7 +830,7 @@ class CanvasCamera extends WithEvents {
       for (const renderer in this.canvas) {
         if (
           this.canvas.hasOwnProperty(renderer) &&
-          this.canvas[renderer] instanceof Renderer
+          this.canvas[renderer] instanceof CanvasCameraRenderer
         ) {
           if (this.canvas[renderer]?.enabled()) {
             this.canvas[renderer]?.disable();
@@ -845,7 +878,7 @@ class CanvasCamera extends WithEvents {
   }
 
   getUISize() {
-    const size: UISize = {
+    const size: CanvasCameraUISize = {
       width: window.innerWidth,
       height: window.innerHeight,
     };
@@ -881,7 +914,7 @@ class CanvasCamera extends WithEvents {
     return size;
   }
 
-  getUIOrientation(): Orientation {
+  getUIOrientation(): CanvasCameraOrientation {
     if (isNaN(Number(window.orientation))) {
       return 'landscape';
     } else {
@@ -893,7 +926,7 @@ class CanvasCamera extends WithEvents {
     }
   }
 
-  setRenderersSize(size: CanvasSize) {
+  setRenderersSize(size: CanvasCameraCanvasSize) {
     if (size.width && size.height) {
       if (this.canvas.fullsize) {
         const canvasWidth = Number(size.width);

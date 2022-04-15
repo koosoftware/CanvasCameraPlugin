@@ -3,25 +3,29 @@ interface Window {
     Ionic?: any;
     CanvasCamera: CanvasCamera;
 }
-declare type UISize = CanvasSize;
-declare type UseImageAs = 'data' | 'file';
-declare type CameraFacing = 'front' | 'back';
-declare type PluginResultCallbackFunction = (data: CanvasCameraData) => void;
+declare type CanvasCameraUISize = CanvasCameraCanvasSize;
+declare type CanvasCameraUseImageAs = 'data' | 'file';
+declare type CanvasCameraCameraFacing = 'front' | 'back';
+declare type CanvasCameraPluginResultCallbackFunction = (data: CanvasCameraData) => void;
 declare type CanvasCameraEventMethodName = 'beforeFrameRendering' | 'afterFrameRendering' | 'beforeFrameInitialization' | 'afterFrameInitialization' | 'beforeRenderingPresets' | 'afterRenderingPresets';
 declare type CanvasCameraEventName = Lowercase<CanvasCameraEventMethodName>;
-interface CanvasElements {
+interface CanvasCameraCanvasElements {
     fullsize: HTMLCanvasElement;
     thumbnail?: HTMLCanvasElement;
 }
-interface Renderers {
-    fullsize: Renderer;
-    thumbnail?: Renderer;
-    [key: string]: Renderer | undefined;
+interface CanvasCameraRenderers {
+    fullsize: CanvasCameraRenderer;
+    thumbnail?: CanvasCameraRenderer;
+    [key: string]: CanvasCameraRenderer | undefined;
+}
+interface CanvasCameraEventDetail {
+    context: CanvasCamera | CanvasCameraRenderer | CanvasCameraFrame;
+    data: CanvasCamera | CanvasCameraRenderer | CanvasCameraFrame;
 }
 interface CanvasCameraUserOptions {
     width?: number;
     height?: number;
-    cameraFacing?: CameraFacing;
+    cameraFacing?: CanvasCameraCameraFacing;
     canvas?: {
         width?: number;
         height?: number;
@@ -30,16 +34,16 @@ interface CanvasCameraUserOptions {
         width?: number;
         height?: number;
     };
-    use?: UseImageAs;
+    use?: CanvasCameraUseImageAs;
     fps?: number;
     flashMode?: boolean;
     hasThumbnail?: boolean;
     thumbnailRatio?: number;
-    onAfterDraw?: (frame?: Frame) => void;
-    onBeforeDraw?: (frame?: Frame) => void;
+    onAfterDraw?: <F>(frame: F) => void;
+    onBeforeDraw?: <F>(frame: F) => void;
 }
 interface CanvasCameraDataImages {
-    orientation?: Orientation;
+    orientation?: CanvasCameraOrientation;
     fullsize?: CanvasCameraDataImage;
     thumbnail: CanvasCameraDataImage;
 }
@@ -68,9 +72,9 @@ interface CanvasCameraData {
     preview?: CanvasCameraCaptureSettings;
     output?: CanvasCameraDataOutput;
 }
-declare type Orientation = 'portrait' | 'landscape';
-declare type CallbackFunction = (data: any) => void;
-interface CanvasSize {
+declare type CanvasCameraOrientation = 'portrait' | 'landscape';
+declare type CanvasCameraEventListener = <D>(data: D) => void;
+interface CanvasCameraCanvasSize {
     height: number;
     width: number;
     auto?: boolean;
@@ -80,10 +84,10 @@ interface CanvasCameraDataImage {
     file?: string;
     path?: string;
     rotation?: number;
-    orientation?: Orientation;
+    orientation?: CanvasCameraOrientation;
     timestamp?: number;
 }
-declare class Frame {
+declare class CanvasCameraFrame {
     ratio: number;
     sx: number;
     sy: number;
@@ -93,86 +97,92 @@ declare class Frame {
     dy: number;
     dWidth: number;
     dHeight: number;
-    renderer: Renderer;
+    renderer: CanvasCameraRenderer;
     image: HTMLImageElement;
     element: HTMLCanvasElement;
-    constructor(image: HTMLImageElement, element: HTMLCanvasElement, renderer: Renderer);
+    constructor(image: HTMLImageElement, element: HTMLCanvasElement, renderer: CanvasCameraRenderer);
     initialize(): this;
     recycle(): void;
 }
-declare class Renderer {
+declare class CanvasCameraRenderer {
     data: CanvasCameraDataImage | undefined;
-    size: CanvasSize | undefined;
+    size: CanvasCameraCanvasSize | undefined;
     image: HTMLImageElement | undefined;
     context: CanvasRenderingContext2D | undefined | null;
-    orientation: Orientation | undefined;
+    orientation: CanvasCameraOrientation | undefined;
     buffer: CanvasCameraDataImage[];
     available: boolean;
     fullscreen: boolean;
     element: HTMLCanvasElement;
     canvasCamera: CanvasCamera;
-    onAfterDraw: CallbackFunction;
-    onBeforeDraw: CallbackFunction;
+    onAfterDraw: CanvasCameraEventListener | undefined;
+    onBeforeDraw: CanvasCameraEventListener | undefined;
     constructor(element: HTMLCanvasElement, canvasCamera: CanvasCamera);
     initialize(): this;
     onOrientationChange(): void;
     clear(): this;
-    draw(frame: Frame): this;
+    draw(frame: CanvasCameraFrame): this;
     bufferize(data: CanvasCameraDataImage): this;
     run(): this;
-    render(data: CanvasCameraDataImage | undefined): this;
+    render(data: CanvasCameraDataImage): this;
     enable(): this;
     disable(): this;
     enabled(): boolean;
     disabled(): boolean;
     invert(): this;
     resize(): this;
-    setSize(size: CanvasSize, auto?: boolean): this;
-    setOnBeforeDraw(onBeforeDraw: CallbackFunction): this;
-    setOnAfterDraw(onAfterDraw: CallbackFunction): this;
+    setSize(size: CanvasCameraCanvasSize, auto?: boolean): this;
+    setOnBeforeDraw(onBeforeDraw: CanvasCameraEventListener): this;
+    setOnAfterDraw(onAfterDraw: CanvasCameraEventListener): this;
 }
-declare abstract class WithEvents {
-    abstract beforeFrameRendering(listener: CallbackFunction): void;
-    abstract afterFrameRendering(listener: CallbackFunction): void;
-    abstract beforeFrameInitialization(listener: CallbackFunction): void;
-    abstract afterFrameInitialization(listener: CallbackFunction): void;
-    abstract beforeRenderingPresets(listener: CallbackFunction): void;
-    abstract afterRenderingPresets(listener: CallbackFunction): void;
+declare abstract class CanvasCameraWithEvents {
+    abstract beforeFrameRendering(listener: CanvasCameraEventListener): void;
+    abstract afterFrameRendering(listener: CanvasCameraEventListener): void;
+    abstract beforeFrameInitialization(listener: CanvasCameraEventListener): void;
+    abstract afterFrameInitialization(listener: CanvasCameraEventListener): void;
+    abstract beforeRenderingPresets(listener: CanvasCameraEventListener): void;
+    abstract afterRenderingPresets(listener: CanvasCameraEventListener): void;
 }
-declare class CanvasCamera extends WithEvents {
+declare class CanvasCamera extends CanvasCameraWithEvents {
     static instance: CanvasCamera;
-    onCapture: CallbackFunction | null;
+    onCapture: CanvasCameraEventListener | undefined;
     nativeClass: string;
-    canvas: Renderers;
+    canvas: CanvasCameraRenderers;
     options: CanvasCameraUserOptions;
     constructor();
     static getInstance(): CanvasCamera;
-    static initialize(fcanvas: HTMLCanvasElement | CanvasElements, tcanvas?: HTMLCanvasElement): void;
-    static start(userOptions: CanvasCameraUserOptions, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
-    static stop(onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
-    static cameraPosition(cameraFacing: CameraFacing, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
-    static flashMode(flashMode: boolean, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
-    beforeFrameRendering(listener: CallbackFunction): void;
-    afterFrameRendering(listener: CallbackFunction): void;
-    beforeFrameInitialization(listener: CallbackFunction): void;
-    afterFrameInitialization(listener: CallbackFunction): void;
-    beforeRenderingPresets(listener: CallbackFunction): void;
-    afterRenderingPresets(listener: CallbackFunction): void;
+    static initialize(fcanvas: HTMLCanvasElement | CanvasCameraCanvasElements, tcanvas?: HTMLCanvasElement): void;
+    static start(userOptions: CanvasCameraUserOptions, onError?: CanvasCameraPluginResultCallbackFunction, onSuccess?: CanvasCameraPluginResultCallbackFunction): void;
+    static stop(onError?: CanvasCameraPluginResultCallbackFunction, onSuccess?: CanvasCameraPluginResultCallbackFunction): void;
+    static cameraPosition(cameraFacing: CanvasCameraCameraFacing, onError?: CanvasCameraPluginResultCallbackFunction, onSuccess?: CanvasCameraPluginResultCallbackFunction): void;
+    static flashMode(flashMode: boolean, onError?: CanvasCameraPluginResultCallbackFunction, onSuccess?: CanvasCameraPluginResultCallbackFunction): void;
+    beforeFrameRendering(listener: CanvasCameraEventListener): this;
+    static beforeFrameRendering(listener: CanvasCameraEventListener): CanvasCamera;
+    afterFrameRendering(listener: CanvasCameraEventListener): this;
+    static afterFrameRendering(listener: CanvasCameraEventListener): CanvasCamera;
+    beforeFrameInitialization(listener: CanvasCameraEventListener): this;
+    static beforeFrameInitialization(listener: CanvasCameraEventListener): CanvasCamera;
+    afterFrameInitialization(listener: CanvasCameraEventListener): this;
+    static afterFrameInitialization(listener: CanvasCameraEventListener): CanvasCamera;
+    beforeRenderingPresets(listener: CanvasCameraEventListener): this;
+    static beforeRenderingPresets(listener: CanvasCameraEventListener): CanvasCamera;
+    afterRenderingPresets(listener: CanvasCameraEventListener): this;
+    static afterRenderingPresets(listener: CanvasCameraEventListener): CanvasCamera;
     private triggerEvent;
-    dispatch(this: CanvasCamera, eventName: CanvasCameraEventName, caller: CanvasCamera | Renderer | Frame, frame?: Frame): void;
-    initialize(fcanvas: HTMLCanvasElement | CanvasElements, tcanvas?: HTMLCanvasElement): void;
-    start(userOptions: CanvasCameraUserOptions, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
-    stop(onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
-    flashMode(flashMode: boolean, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
-    cameraPosition(cameraFacing: CameraFacing, onError?: PluginResultCallbackFunction, onSuccess?: PluginResultCallbackFunction): void;
+    dispatch(this: CanvasCamera, eventName: CanvasCameraEventName, context: CanvasCamera | CanvasCameraRenderer | CanvasCameraFrame, data?: CanvasCamera | CanvasCameraRenderer | CanvasCameraFrame): void;
+    initialize(fcanvas: HTMLCanvasElement | CanvasCameraCanvasElements, tcanvas?: HTMLCanvasElement): void;
+    start(userOptions: CanvasCameraUserOptions, onError?: CanvasCameraPluginResultCallbackFunction, onSuccess?: CanvasCameraPluginResultCallbackFunction): void;
+    stop(onError?: CanvasCameraPluginResultCallbackFunction, onSuccess?: CanvasCameraPluginResultCallbackFunction): void;
+    flashMode(flashMode: boolean, onError?: CanvasCameraPluginResultCallbackFunction, onSuccess?: CanvasCameraPluginResultCallbackFunction): void;
+    cameraPosition(cameraFacing: CanvasCameraCameraFacing, onError?: CanvasCameraPluginResultCallbackFunction, onSuccess?: CanvasCameraPluginResultCallbackFunction): void;
     capture(data: CanvasCameraData): void;
-    createFrame(image: HTMLImageElement, element: HTMLCanvasElement, renderer: Renderer): Frame;
-    createRenderer(element: HTMLCanvasElement, canvasCamera: CanvasCamera): Renderer;
+    createFrame(image: HTMLImageElement, element: HTMLCanvasElement, renderer: CanvasCameraRenderer): CanvasCameraFrame;
+    createRenderer(element: HTMLCanvasElement, canvasCamera: CanvasCamera): CanvasCameraRenderer;
     enableRenderers(): void;
     disableRenderers(): void;
     setRenderingPresets(): this;
-    getUISize(): CanvasSize;
-    getUIOrientation(): Orientation;
-    setRenderersSize(size: CanvasSize): this;
+    getUISize(): CanvasCameraCanvasSize;
+    getUIOrientation(): CanvasCameraOrientation;
+    setRenderersSize(size: CanvasCameraCanvasSize): this;
 }
 //# sourceMappingURL=canvascamera.d.ts.map
