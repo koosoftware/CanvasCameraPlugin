@@ -99,7 +99,7 @@ export interface CanvasCameraData {
 
 // CanvasCameraRenderer export type definitions :
 export type CanvasCameraOrientation = 'portrait' | 'landscape';
-export type CanvasCameraEventListener = <D>(data: D) => void;
+export type CanvasCameraEventListener = <E, D>(event: E, data?: D) => void;
 
 export interface CanvasCameraCanvasSize {
   height: number;
@@ -122,7 +122,7 @@ export interface CanvasCameraDataImage {
  * @export
  * @class CanvasCameraFrame
  */
-export class CanvasCameraFrame {
+class CanvasCameraFrame {
   public ratio = 0;
 
   public sx = 0;
@@ -211,7 +211,7 @@ export class CanvasCameraFrame {
  * @export
  * @class CanvasCameraRenderer
  */
-export class CanvasCameraRenderer {
+class CanvasCameraRenderer {
   public data: CanvasCameraDataImage | undefined;
   public size: CanvasCameraCanvasSize | undefined;
   public image: HTMLImageElement | undefined;
@@ -250,11 +250,11 @@ export class CanvasCameraRenderer {
           if (frame) {
             this.resize().clear();
             if (this.onBeforeDraw) {
-              this.onBeforeDraw<CanvasCameraFrame>(frame);
+              this.onBeforeDraw<CanvasCameraFrame, undefined>(frame);
             }
             this.draw(frame);
             if (this.onAfterDraw) {
-              this.onAfterDraw<CanvasCameraFrame>(frame);
+              this.onAfterDraw<CanvasCameraFrame, undefined>(frame);
             }
 
             frame.recycle();
@@ -507,7 +507,7 @@ export class CanvasCameraRenderer {
   }
 }
 
-export abstract class CanvasCameraWithEvents {
+abstract class CanvasCameraWithEvents {
   abstract beforeFrameRendering(listener: CanvasCameraEventListener): void;
   abstract afterFrameRendering(listener: CanvasCameraEventListener): void;
   abstract beforeFrameInitialization(listener: CanvasCameraEventListener): void;
@@ -522,7 +522,7 @@ export abstract class CanvasCameraWithEvents {
  * @export
  * @class CanvasCamera
  */
-export default class CanvasCamera extends CanvasCameraWithEvents {
+class CanvasCamera extends CanvasCameraWithEvents {
   public static instance: CanvasCamera;
   public onCapture: CanvasCameraEventListener | undefined;
   public nativeClass = 'CanvasCamera';
@@ -634,7 +634,7 @@ export default class CanvasCamera extends CanvasCameraWithEvents {
     window.addEventListener(
       listenerName,
       function (e: CustomEvent<CanvasCameraEventDetail>) {
-        listener.call(e.detail.context, [e, e.detail.data]);
+        listener.call(e.detail.context, e, e.detail.data);
       }.bind(this) as EventListener
     );
 

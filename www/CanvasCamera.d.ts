@@ -74,7 +74,7 @@ export interface CanvasCameraData {
     output?: CanvasCameraDataOutput;
 }
 export declare type CanvasCameraOrientation = 'portrait' | 'landscape';
-export declare type CanvasCameraEventListener = <D>(data: D) => void;
+export declare type CanvasCameraEventListener = <E, D>(event: E, data?: D) => void;
 export interface CanvasCameraCanvasSize {
     height: number;
     width: number;
@@ -88,7 +88,7 @@ export interface CanvasCameraDataImage {
     orientation?: CanvasCameraOrientation;
     timestamp?: number;
 }
-export declare class CanvasCameraFrame {
+declare class CanvasCameraFrame {
     ratio: number;
     sx: number;
     sy: number;
@@ -105,7 +105,7 @@ export declare class CanvasCameraFrame {
     initialize(): this;
     recycle(): void;
 }
-export declare class CanvasCameraRenderer {
+declare class CanvasCameraRenderer {
     data: CanvasCameraDataImage | undefined;
     size: CanvasCameraCanvasSize | undefined;
     image: HTMLImageElement | undefined;
@@ -136,7 +136,7 @@ export declare class CanvasCameraRenderer {
     setOnBeforeDraw(onBeforeDraw: CanvasCameraEventListener): this;
     setOnAfterDraw(onAfterDraw: CanvasCameraEventListener): this;
 }
-export declare abstract class CanvasCameraWithEvents {
+declare abstract class CanvasCameraWithEvents {
     abstract beforeFrameRendering(listener: CanvasCameraEventListener): void;
     abstract afterFrameRendering(listener: CanvasCameraEventListener): void;
     abstract beforeFrameInitialization(listener: CanvasCameraEventListener): void;
@@ -144,7 +144,7 @@ export declare abstract class CanvasCameraWithEvents {
     abstract beforeRenderingPresets(listener: CanvasCameraEventListener): void;
     abstract afterRenderingPresets(listener: CanvasCameraEventListener): void;
 }
-export default class CanvasCamera extends CanvasCameraWithEvents {
+declare class CanvasCamera extends CanvasCameraWithEvents {
     static instance: CanvasCamera;
     onCapture: CanvasCameraEventListener | undefined;
     nativeClass: string;
@@ -186,4 +186,5 @@ export default class CanvasCamera extends CanvasCameraWithEvents {
     getUIOrientation(): CanvasCameraOrientation;
     setRenderersSize(size: CanvasCameraCanvasSize): this;
 }
+export {};
 //# sourceMappingURL=canvascamera.d.ts.map
