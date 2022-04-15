@@ -1,4 +1,4 @@
-import { exec } from 'cordova';
+const exec = require('cordova/exec');
 
 declare global {
   interface Window {

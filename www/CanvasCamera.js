@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var cordova_1 = require("cordova");
+var exec = require('cordova/exec');
 var CanvasCameraFrame = (function () {
     function CanvasCameraFrame(image, element, renderer) {
         this.ratio = 0;
@@ -383,7 +383,7 @@ var CanvasCamera = (function () {
             this.onCapture = onSuccess;
         }
         this.enableRenderers();
-        (0, cordova_1.exec)(this.capture.bind(this), function (error) {
+        exec(this.capture.bind(this), function (error) {
             _this.disableRenderers();
             if (onError && typeof onError === 'function') {
                 onError(error);
@@ -392,7 +392,7 @@ var CanvasCamera = (function () {
     };
     CanvasCamera.prototype.stop = function (onError, onSuccess) {
         this.disableRenderers();
-        (0, cordova_1.exec)(function (data) {
+        exec(function (data) {
             if (onSuccess && typeof onSuccess === 'function') {
                 onSuccess(data);
             }
@@ -403,7 +403,7 @@ var CanvasCamera = (function () {
         }, this.nativeClass, 'stopCapture', []);
     };
     CanvasCamera.prototype.flashMode = function (flashMode, onError, onSuccess) {
-        (0, cordova_1.exec)(function (data) {
+        exec(function (data) {
             if (onSuccess && typeof onSuccess === 'function') {
                 onSuccess(data);
             }
@@ -416,7 +416,7 @@ var CanvasCamera = (function () {
     CanvasCamera.prototype.cameraPosition = function (cameraFacing, onError, onSuccess) {
         var _this = this;
         this.disableRenderers();
-        (0, cordova_1.exec)(function (data) {
+        exec(function (data) {
             _this.enableRenderers();
             if (onSuccess && typeof onSuccess === 'function') {
                 onSuccess(data);
