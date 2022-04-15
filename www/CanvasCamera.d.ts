@@ -179,4 +179,4 @@ declare class CanvasCamera {
     setRenderersSize(size: CanvasCameraCanvasSize): this;
 }
 export {};
-//# sourceMappingURL=canvascamera.d.ts.map
+//# sourceMappingURL=CanvasCamera.d.ts.map

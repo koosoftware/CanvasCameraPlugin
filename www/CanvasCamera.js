@@ -585,4 +585,4 @@ var CanvasCamera = (function () {
     return CanvasCamera;
 }());
 module.exports = CanvasCamera;
-//# sourceMappingURL=canvascamera.js.map
+//# sourceMappingURL=CanvasCamera.js.map

@@ -17,8 +17,6 @@ export type CanvasCameraPluginResultCallbackFunction = (
   data: CanvasCameraData
 ) => void;
 
-
-
 export type CanvasCameraEventMethodName =
   | 'beforeFrameRendering'
   | 'afterFrameRendering'
