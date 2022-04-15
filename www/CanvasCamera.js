@@ -1,21 +1,5 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CanvasCameraWithEvents = exports.CanvasCameraRenderer = exports.CanvasCameraFrame = void 0;
 var exec = require('cordova/exec');
 var CanvasCameraFrame = (function () {
     function CanvasCameraFrame(image, element, renderer) {
@@ -63,7 +47,6 @@ var CanvasCameraFrame = (function () {
     };
     return CanvasCameraFrame;
 }());
-exports.CanvasCameraFrame = CanvasCameraFrame;
 var CanvasCameraRenderer = (function () {
     function CanvasCameraRenderer(element, canvasCamera) {
         this.buffer = [];
@@ -295,21 +278,11 @@ var CanvasCameraRenderer = (function () {
     };
     return CanvasCameraRenderer;
 }());
-exports.CanvasCameraRenderer = CanvasCameraRenderer;
-var CanvasCameraWithEvents = (function () {
-    function CanvasCameraWithEvents() {
-    }
-    return CanvasCameraWithEvents;
-}());
-exports.CanvasCameraWithEvents = CanvasCameraWithEvents;
-var CanvasCamera = (function (_super) {
-    __extends(CanvasCamera, _super);
+var CanvasCamera = (function () {
     function CanvasCamera() {
-        var _this = _super.call(this) || this;
-        _this.nativeClass = 'CanvasCamera';
-        _this.canvas = {};
-        _this.options = {};
-        return _this;
+        this.nativeClass = 'CanvasCamera';
+        this.canvas = {};
+        this.options = {};
     }
     CanvasCamera.getInstance = function () {
         if (this.instance && this.instance instanceof CanvasCamera) {
@@ -371,7 +344,7 @@ var CanvasCamera = (function (_super) {
     CanvasCamera.prototype.triggerEvent = function (eventName, listener) {
         var listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
         window.addEventListener(listenerName, function (e) {
-            listener.call(e.detail.context, [e, e.detail.data]);
+            listener.call(e.detail.context, e, e.detail.data);
         }.bind(this));
         return this;
     };
@@ -610,7 +583,6 @@ var CanvasCamera = (function (_super) {
         return this;
     };
     return CanvasCamera;
-}(CanvasCameraWithEvents));
-exports.default = CanvasCamera;
+}());
 module.exports = CanvasCamera;
 //# sourceMappingURL=canvascamera.js.map

@@ -7,6 +7,7 @@ declare global {
 export declare type CanvasCameraUISize = CanvasCameraCanvasSize;
 export declare type CanvasCameraUseImageAs = 'data' | 'file';
 export declare type CanvasCameraCameraFacing = 'front' | 'back';
+export declare type CanvasCameraPluginCallback = <D>(data: D) => void;
 export declare type CanvasCameraPluginResultCallbackFunction = (data: CanvasCameraData) => void;
 export declare type CanvasCameraEventMethodName = 'beforeFrameRendering' | 'afterFrameRendering' | 'beforeFrameInitialization' | 'afterFrameInitialization' | 'beforeRenderingPresets' | 'afterRenderingPresets';
 export declare type CanvasCameraEventName = Lowercase<CanvasCameraEventMethodName>;
@@ -74,7 +75,7 @@ export interface CanvasCameraData {
     output?: CanvasCameraDataOutput;
 }
 export declare type CanvasCameraOrientation = 'portrait' | 'landscape';
-export declare type CanvasCameraEventListener = <D>(data: D) => void;
+export declare type CanvasCameraEventListener = <E, D>(event: E, data?: D) => void;
 export interface CanvasCameraCanvasSize {
     height: number;
     width: number;
@@ -88,7 +89,7 @@ export interface CanvasCameraDataImage {
     orientation?: CanvasCameraOrientation;
     timestamp?: number;
 }
-export declare class CanvasCameraFrame {
+declare class CanvasCameraFrame {
     ratio: number;
     sx: number;
     sy: number;
@@ -105,7 +106,7 @@ export declare class CanvasCameraFrame {
     initialize(): this;
     recycle(): void;
 }
-export declare class CanvasCameraRenderer {
+declare class CanvasCameraRenderer {
     data: CanvasCameraDataImage | undefined;
     size: CanvasCameraCanvasSize | undefined;
     image: HTMLImageElement | undefined;
@@ -116,8 +117,8 @@ export declare class CanvasCameraRenderer {
     fullscreen: boolean;
     element: HTMLCanvasElement;
     canvasCamera: CanvasCamera;
-    onAfterDraw: CanvasCameraEventListener | undefined;
-    onBeforeDraw: CanvasCameraEventListener | undefined;
+    onAfterDraw: CanvasCameraPluginCallback | undefined;
+    onBeforeDraw: CanvasCameraPluginCallback | undefined;
     constructor(element: HTMLCanvasElement, canvasCamera: CanvasCamera);
     initialize(): this;
     onOrientationChange(): void;
@@ -133,24 +134,15 @@ export declare class CanvasCameraRenderer {
     invert(): this;
     resize(): this;
     setSize(size: CanvasCameraCanvasSize, auto?: boolean): this;
-    setOnBeforeDraw(onBeforeDraw: CanvasCameraEventListener): this;
-    setOnAfterDraw(onAfterDraw: CanvasCameraEventListener): this;
+    setOnBeforeDraw(onBeforeDraw: CanvasCameraPluginCallback): this;
+    setOnAfterDraw(onAfterDraw: CanvasCameraPluginCallback): this;
 }
-export declare abstract class CanvasCameraWithEvents {
-    abstract beforeFrameRendering(listener: CanvasCameraEventListener): void;
-    abstract afterFrameRendering(listener: CanvasCameraEventListener): void;
-    abstract beforeFrameInitialization(listener: CanvasCameraEventListener): void;
-    abstract afterFrameInitialization(listener: CanvasCameraEventListener): void;
-    abstract beforeRenderingPresets(listener: CanvasCameraEventListener): void;
-    abstract afterRenderingPresets(listener: CanvasCameraEventListener): void;
-}
-export default class CanvasCamera extends CanvasCameraWithEvents {
+declare class CanvasCamera {
     static instance: CanvasCamera;
-    onCapture: CanvasCameraEventListener | undefined;
+    onCapture: CanvasCameraPluginCallback | undefined;
     nativeClass: string;
     canvas: CanvasCameraRenderers;
     options: CanvasCameraUserOptions;
-    constructor();
     static getInstance(): CanvasCamera;
     static initialize(fcanvas: HTMLCanvasElement | CanvasCameraCanvasElements, tcanvas?: HTMLCanvasElement): void;
     static start(userOptions: CanvasCameraUserOptions, onError?: CanvasCameraPluginResultCallbackFunction, onSuccess?: CanvasCameraPluginResultCallbackFunction): void;
@@ -186,4 +178,5 @@ export default class CanvasCamera extends CanvasCameraWithEvents {
     getUIOrientation(): CanvasCameraOrientation;
     setRenderersSize(size: CanvasCameraCanvasSize): this;
 }
+export {};
 //# sourceMappingURL=canvascamera.d.ts.map

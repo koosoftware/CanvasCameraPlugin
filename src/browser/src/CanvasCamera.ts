@@ -12,9 +12,12 @@ export type CanvasCameraUISize = CanvasCameraCanvasSize;
 export type CanvasCameraUseImageAs = 'data' | 'file';
 export type CanvasCameraCameraFacing = 'front' | 'back';
 
+export type CanvasCameraPluginCallback = <D>(data: D) => void;
 export type CanvasCameraPluginResultCallbackFunction = (
   data: CanvasCameraData
 ) => void;
+
+
 
 export type CanvasCameraEventMethodName =
   | 'beforeFrameRendering'
@@ -99,7 +102,7 @@ export interface CanvasCameraData {
 
 // CanvasCameraRenderer export type definitions :
 export type CanvasCameraOrientation = 'portrait' | 'landscape';
-export type CanvasCameraEventListener = <D>(data: D) => void;
+export type CanvasCameraEventListener = <E, D>(event: E, data?: D) => void;
 
 export interface CanvasCameraCanvasSize {
   height: number;
@@ -122,7 +125,7 @@ export interface CanvasCameraDataImage {
  * @export
  * @class CanvasCameraFrame
  */
-export class CanvasCameraFrame {
+class CanvasCameraFrame {
   public ratio = 0;
 
   public sx = 0;
@@ -211,7 +214,7 @@ export class CanvasCameraFrame {
  * @export
  * @class CanvasCameraRenderer
  */
-export class CanvasCameraRenderer {
+class CanvasCameraRenderer {
   public data: CanvasCameraDataImage | undefined;
   public size: CanvasCameraCanvasSize | undefined;
   public image: HTMLImageElement | undefined;
@@ -224,8 +227,8 @@ export class CanvasCameraRenderer {
   public element: HTMLCanvasElement;
   public canvasCamera: CanvasCamera;
 
-  public onAfterDraw: CanvasCameraEventListener | undefined;
-  public onBeforeDraw: CanvasCameraEventListener | undefined;
+  public onAfterDraw: CanvasCameraPluginCallback | undefined;
+  public onBeforeDraw: CanvasCameraPluginCallback | undefined;
 
   constructor(element: HTMLCanvasElement, canvasCamera: CanvasCamera) {
     this.element = element;
@@ -492,28 +495,19 @@ export class CanvasCameraRenderer {
     return this;
   }
 
-  setOnBeforeDraw(onBeforeDraw: CanvasCameraEventListener) {
+  setOnBeforeDraw(onBeforeDraw: CanvasCameraPluginCallback) {
     if (onBeforeDraw && typeof onBeforeDraw === 'function') {
       this.onBeforeDraw = onBeforeDraw;
     }
     return this;
   }
 
-  setOnAfterDraw(onAfterDraw: CanvasCameraEventListener) {
+  setOnAfterDraw(onAfterDraw: CanvasCameraPluginCallback) {
     if (onAfterDraw && typeof onAfterDraw === 'function') {
       this.onAfterDraw = onAfterDraw;
     }
     return this;
   }
-}
-
-export abstract class CanvasCameraWithEvents {
-  abstract beforeFrameRendering(listener: CanvasCameraEventListener): void;
-  abstract afterFrameRendering(listener: CanvasCameraEventListener): void;
-  abstract beforeFrameInitialization(listener: CanvasCameraEventListener): void;
-  abstract afterFrameInitialization(listener: CanvasCameraEventListener): void;
-  abstract beforeRenderingPresets(listener: CanvasCameraEventListener): void;
-  abstract afterRenderingPresets(listener: CanvasCameraEventListener): void;
 }
 
 /**
@@ -522,16 +516,12 @@ export abstract class CanvasCameraWithEvents {
  * @export
  * @class CanvasCamera
  */
-export default class CanvasCamera extends CanvasCameraWithEvents {
+class CanvasCamera {
   public static instance: CanvasCamera;
-  public onCapture: CanvasCameraEventListener | undefined;
+  public onCapture: CanvasCameraPluginCallback | undefined;
   public nativeClass = 'CanvasCamera';
   public canvas: CanvasCameraRenderers = {} as CanvasCameraRenderers;
   public options: CanvasCameraUserOptions = {} as CanvasCameraUserOptions;
-
-  constructor() {
-    super();
-  }
 
   static getInstance() {
     if (this.instance && this.instance instanceof CanvasCamera) {
@@ -634,7 +624,7 @@ export default class CanvasCamera extends CanvasCameraWithEvents {
     window.addEventListener(
       listenerName,
       function (e: CustomEvent<CanvasCameraEventDetail>) {
-        listener.call(e.detail.context, [e, e.detail.data]);
+        listener.call(e.detail.context, e, e.detail.data);
       }.bind(this) as EventListener
     );
 
