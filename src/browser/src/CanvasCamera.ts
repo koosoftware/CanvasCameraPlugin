@@ -233,7 +233,7 @@ export interface CanvasCameraFrameInterface {
  * @export
  * @class CanvasCameraFrame
  */
-class CanvasCameraFrame implements CanvasCameraFrameInterface {
+export class CanvasCameraFrame implements CanvasCameraFrameInterface {
   public ratio = 0;
 
   public sx = 0;
@@ -322,7 +322,7 @@ class CanvasCameraFrame implements CanvasCameraFrameInterface {
  * @export
  * @class CanvasCameraRenderer
  */
-class CanvasCameraRenderer implements CanvasCameraRendererInterface {
+export class CanvasCameraRenderer implements CanvasCameraRendererInterface {
   public data: CanvasCameraDataImage | undefined;
   public size: CanvasCameraCanvasSize | undefined;
   public image: HTMLImageElement | undefined;
@@ -624,7 +624,7 @@ class CanvasCameraRenderer implements CanvasCameraRendererInterface {
  * @export
  * @class CanvasCamera
  */
-class CanvasCamera implements CanvasCameraInterface {
+export default class CanvasCamera implements CanvasCameraInterface {
   public static instance: CanvasCamera;
   public onCapture: CanvasCameraPluginCallback | undefined;
   public nativeClass = 'CanvasCamera';

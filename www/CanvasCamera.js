@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CanvasCameraRenderer = exports.CanvasCameraFrame = void 0;
 var exec = require('cordova/exec');
 var CanvasCameraFrame = (function () {
     function CanvasCameraFrame(image, element, renderer) {
@@ -47,6 +48,7 @@ var CanvasCameraFrame = (function () {
     };
     return CanvasCameraFrame;
 }());
+exports.CanvasCameraFrame = CanvasCameraFrame;
 var CanvasCameraRenderer = (function () {
     function CanvasCameraRenderer(element, canvasCamera) {
         this.buffer = [];
@@ -278,6 +280,7 @@ var CanvasCameraRenderer = (function () {
     };
     return CanvasCameraRenderer;
 }());
+exports.CanvasCameraRenderer = CanvasCameraRenderer;
 var CanvasCamera = (function () {
     function CanvasCamera() {
         this.nativeClass = 'CanvasCamera';
@@ -584,5 +587,6 @@ var CanvasCamera = (function () {
     };
     return CanvasCamera;
 }());
+exports.default = CanvasCamera;
 module.exports = CanvasCamera;
 //# sourceMappingURL=CanvasCamera.js.map

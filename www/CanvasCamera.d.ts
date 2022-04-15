@@ -165,7 +165,7 @@ export interface CanvasCameraFrameInterface {
     initialize(): this;
     recycle(): void;
 }
-declare class CanvasCameraFrame implements CanvasCameraFrameInterface {
+export declare class CanvasCameraFrame implements CanvasCameraFrameInterface {
     ratio: number;
     sx: number;
     sy: number;
@@ -182,7 +182,7 @@ declare class CanvasCameraFrame implements CanvasCameraFrameInterface {
     initialize(): this;
     recycle(): void;
 }
-declare class CanvasCameraRenderer implements CanvasCameraRendererInterface {
+export declare class CanvasCameraRenderer implements CanvasCameraRendererInterface {
     data: CanvasCameraDataImage | undefined;
     size: CanvasCameraCanvasSize | undefined;
     image: HTMLImageElement | undefined;
@@ -213,7 +213,7 @@ declare class CanvasCameraRenderer implements CanvasCameraRendererInterface {
     setOnBeforeDraw(onBeforeDraw: CanvasCameraPluginCallback): this;
     setOnAfterDraw(onAfterDraw: CanvasCameraPluginCallback): this;
 }
-declare class CanvasCamera implements CanvasCameraInterface {
+export default class CanvasCamera implements CanvasCameraInterface {
     static instance: CanvasCamera;
     onCapture: CanvasCameraPluginCallback | undefined;
     nativeClass: string;
@@ -254,5 +254,4 @@ declare class CanvasCamera implements CanvasCameraInterface {
     getUIOrientation(): CanvasCameraOrientation;
     setRenderersSize(size: CanvasCameraCanvasSize): this;
 }
-export {};
 //# sourceMappingURL=CanvasCamera.d.ts.map
