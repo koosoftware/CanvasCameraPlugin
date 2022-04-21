@@ -4,10 +4,11 @@ declare global {
   interface Window {
     Ionic?: any;
     plugin: {
-      CanvasCamera: CanvasCamera;
+      CanvasCamera: CanvasCameraConstructor;
     };
-    CanvasCamera: CanvasCamera;
+    CanvasCamera: CanvasCameraConstructor;
   }
+  var CanvasCamera: CanvasCameraConstructor;
 }
 
 // CanvasCamera export type definitions
@@ -101,9 +102,41 @@ export interface CanvasCameraData {
   output?: CanvasCameraDataOutput;
 }
 
-export declare class CanvasCamera {
-  static instance: CanvasCamera;
-  static getInstance(): CanvasCamera;
+export default interface CanvasCameraConstructor {
+  new (): CanvasCamera;
+  instance: CanvasCamera;
+  getInstance(): CanvasCamera;
+  beforeFrameRendering(listener: CanvasCameraEventListener): CanvasCamera;
+  afterFrameRendering(listener: CanvasCameraEventListener): CanvasCamera;
+  beforeFrameInitialization(listener: CanvasCameraEventListener): CanvasCamera;
+  afterFrameInitialization(listener: CanvasCameraEventListener): CanvasCamera;
+  beforeRenderingPresets(listener: CanvasCameraEventListener): CanvasCamera;
+  afterRenderingPresets(listener: CanvasCameraEventListener): CanvasCamera;
+  initialize(
+    fcanvas: HTMLCanvasElement | CanvasCameraCanvasElements,
+    tcanvas?: HTMLCanvasElement
+  ): void;
+  start(
+    userOptions: CanvasCameraUserOptions,
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
+  ): void;
+  stop(
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
+  ): void;
+  flashMode(
+    flashMode: boolean,
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
+  ): void;
+  cameraPosition(
+    cameraFacing: CanvasCameraCameraFacing,
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
+  ): void;
+}
+export interface CanvasCamera {
   onCapture: CanvasCameraPluginCallback | undefined;
   nativeClass: string;
   canvas: CanvasCameraRenderers;
@@ -114,12 +147,6 @@ export declare class CanvasCamera {
   afterFrameInitialization(listener: CanvasCameraEventListener): this;
   beforeRenderingPresets(listener: CanvasCameraEventListener): this;
   afterRenderingPresets(listener: CanvasCameraEventListener): this;
-  static beforeFrameRendering(listener: CanvasCameraEventListener): CanvasCamera;
-  static afterFrameRendering(listener: CanvasCameraEventListener): CanvasCamera;
-  static beforeFrameInitialization(listener: CanvasCameraEventListener): CanvasCamera;
-  static afterFrameInitialization(listener: CanvasCameraEventListener): CanvasCamera;
-  static beforeRenderingPresets(listener: CanvasCameraEventListener): CanvasCamera;
-  static afterRenderingPresets(listener: CanvasCameraEventListener): CanvasCamera;
   dispatch(
     this: CanvasCamera,
     eventName: CanvasCameraEventName,
@@ -130,16 +157,7 @@ export declare class CanvasCamera {
     fcanvas: HTMLCanvasElement | CanvasCameraCanvasElements,
     tcanvas?: HTMLCanvasElement
   ): void;
-  static initialize(
-    fcanvas: HTMLCanvasElement | CanvasCameraCanvasElements,
-    tcanvas?: HTMLCanvasElement
-  ): void;
   start(
-    userOptions: CanvasCameraUserOptions,
-    onError?: CanvasCameraPluginResultCallbackFunction,
-    onSuccess?: CanvasCameraPluginResultCallbackFunction
-  ): void;
-  static start(
     userOptions: CanvasCameraUserOptions,
     onError?: CanvasCameraPluginResultCallbackFunction,
     onSuccess?: CanvasCameraPluginResultCallbackFunction
@@ -148,26 +166,12 @@ export declare class CanvasCamera {
     onError?: CanvasCameraPluginResultCallbackFunction,
     onSuccess?: CanvasCameraPluginResultCallbackFunction
   ): void;
-  static stop(
-    onError?: CanvasCameraPluginResultCallbackFunction,
-    onSuccess?: CanvasCameraPluginResultCallbackFunction
-  ): void;
   flashMode(
     flashMode: boolean,
     onError?: CanvasCameraPluginResultCallbackFunction,
     onSuccess?: CanvasCameraPluginResultCallbackFunction
   ): void;
-  static flashMode(
-    flashMode: boolean,
-    onError?: CanvasCameraPluginResultCallbackFunction,
-    onSuccess?: CanvasCameraPluginResultCallbackFunction
-  ): void;
   cameraPosition(
-    cameraFacing: CanvasCameraCameraFacing,
-    onError?: CanvasCameraPluginResultCallbackFunction,
-    onSuccess?: CanvasCameraPluginResultCallbackFunction
-  ): void;
-  static cameraPosition(
     cameraFacing: CanvasCameraCameraFacing,
     onError?: CanvasCameraPluginResultCallbackFunction,
     onSuccess?: CanvasCameraPluginResultCallbackFunction
@@ -209,6 +213,10 @@ export interface CanvasCameraDataImage {
   timestamp?: number;
 }
 
+export interface CanvasCameraRendererConstructor {
+    new(element: HTMLCanvasElement, canvasCamera: CanvasCamera): CanvasCameraRenderer;
+}
+
 export interface CanvasCameraRenderer {
   data: CanvasCameraDataImage | undefined;
   size: CanvasCameraCanvasSize | undefined;
@@ -240,6 +248,14 @@ export interface CanvasCameraRenderer {
   setOnAfterDraw(onAfterDraw: CanvasCameraPluginCallback): this;
 }
 
+export interface CanvasCameraFrameConstructor {
+    new(
+        image: HTMLImageElement,
+        element: HTMLCanvasElement,
+        renderer: CanvasCameraRenderer
+      ): CanvasCameraFrame;
+}
+
 // CanvasCameraFrame export type definitions :
 export interface CanvasCameraFrame {
   ratio: number;
@@ -262,9 +278,9 @@ export interface CanvasCameraFrame {
  * Represents a Frame.
  *
  * @export
- * @class CanvasCameraFrame
+ * @class CanvasCameraFrameImplementation
  */
-class CanvasCameraFrameImplementation implements CanvasCameraFrame {
+const CanvasCameraFrameImplementation: CanvasCameraFrameConstructor = class CanvasCameraFrameImplementation implements CanvasCameraFrame {
   public ratio = 0;
 
   public sx = 0;
@@ -351,9 +367,9 @@ class CanvasCameraFrameImplementation implements CanvasCameraFrame {
  * Represents a Renderer.
  *
  * @export
- * @class CanvasCameraRenderer
+ * @class CanvasCameraRendererImplementation
  */
-class CanvasCameraRendererImplementation implements CanvasCameraRenderer {
+const CanvasCameraRendererImplementation: CanvasCameraRendererConstructor = class CanvasCameraRendererImplementation implements CanvasCameraRenderer {
   public data: CanvasCameraDataImage | undefined;
   public size: CanvasCameraCanvasSize | undefined;
   public image: HTMLImageElement | undefined;
@@ -653,9 +669,11 @@ class CanvasCameraRendererImplementation implements CanvasCameraRenderer {
  * Represents a CanvasCamera.
  *
  * @export
- * @class CanvasCamera
+ * @class CanvasCameraImplementation
  */
-class CanvasCameraImplementation implements CanvasCamera {
+const CanvasCameraImplementation: CanvasCameraConstructor = class CanvasCameraImplementation
+  implements CanvasCamera
+{
   public static instance: CanvasCamera;
   public onCapture: CanvasCameraPluginCallback | undefined;
   public nativeClass = 'CanvasCamera';
@@ -939,7 +957,10 @@ class CanvasCameraImplementation implements CanvasCamera {
   }
 
   createRenderer(element: HTMLCanvasElement, canvasCamera: CanvasCamera) {
-    const renderer = new CanvasCameraRendererImplementation(element, canvasCamera);
+    const renderer = new CanvasCameraRendererImplementation(
+      element,
+      canvasCamera
+    );
     return renderer.initialize();
   }
 
@@ -1093,6 +1114,6 @@ class CanvasCameraImplementation implements CanvasCamera {
 
     return this;
   }
-}
+};
 
 module.exports = CanvasCameraImplementation;
