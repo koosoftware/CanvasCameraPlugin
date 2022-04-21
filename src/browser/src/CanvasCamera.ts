@@ -102,6 +102,8 @@ export interface CanvasCameraData {
 }
 
 export declare class CanvasCamera {
+  static instance: CanvasCamera;
+  static getInstance(): CanvasCamera;
   onCapture: CanvasCameraPluginCallback | undefined;
   nativeClass: string;
   canvas: CanvasCameraRenderers;
@@ -112,6 +114,12 @@ export declare class CanvasCamera {
   afterFrameInitialization(listener: CanvasCameraEventListener): this;
   beforeRenderingPresets(listener: CanvasCameraEventListener): this;
   afterRenderingPresets(listener: CanvasCameraEventListener): this;
+  static beforeFrameRendering(listener: CanvasCameraEventListener): CanvasCamera;
+  static afterFrameRendering(listener: CanvasCameraEventListener): CanvasCamera;
+  static beforeFrameInitialization(listener: CanvasCameraEventListener): CanvasCamera;
+  static afterFrameInitialization(listener: CanvasCameraEventListener): CanvasCamera;
+  static beforeRenderingPresets(listener: CanvasCameraEventListener): CanvasCamera;
+  static afterRenderingPresets(listener: CanvasCameraEventListener): CanvasCamera;
   dispatch(
     this: CanvasCamera,
     eventName: CanvasCameraEventName,
@@ -122,7 +130,16 @@ export declare class CanvasCamera {
     fcanvas: HTMLCanvasElement | CanvasCameraCanvasElements,
     tcanvas?: HTMLCanvasElement
   ): void;
+  static initialize(
+    fcanvas: HTMLCanvasElement | CanvasCameraCanvasElements,
+    tcanvas?: HTMLCanvasElement
+  ): void;
   start(
+    userOptions: CanvasCameraUserOptions,
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
+  ): void;
+  static start(
     userOptions: CanvasCameraUserOptions,
     onError?: CanvasCameraPluginResultCallbackFunction,
     onSuccess?: CanvasCameraPluginResultCallbackFunction
@@ -131,12 +148,26 @@ export declare class CanvasCamera {
     onError?: CanvasCameraPluginResultCallbackFunction,
     onSuccess?: CanvasCameraPluginResultCallbackFunction
   ): void;
+  static stop(
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
+  ): void;
   flashMode(
     flashMode: boolean,
     onError?: CanvasCameraPluginResultCallbackFunction,
     onSuccess?: CanvasCameraPluginResultCallbackFunction
   ): void;
+  static flashMode(
+    flashMode: boolean,
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
+  ): void;
   cameraPosition(
+    cameraFacing: CanvasCameraCameraFacing,
+    onError?: CanvasCameraPluginResultCallbackFunction,
+    onSuccess?: CanvasCameraPluginResultCallbackFunction
+  ): void;
+  static cameraPosition(
     cameraFacing: CanvasCameraCameraFacing,
     onError?: CanvasCameraPluginResultCallbackFunction,
     onSuccess?: CanvasCameraPluginResultCallbackFunction
