@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CanvasCameraRenderer = exports.CanvasCameraFrame = void 0;
-var exec = cordova.require('cordova/exec');
+var exec = require('cordova/exec');
 var CanvasCameraFrame = (function () {
     function CanvasCameraFrame(image, element, renderer) {
         this.ratio = 0;
