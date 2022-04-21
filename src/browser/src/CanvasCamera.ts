@@ -1,4 +1,4 @@
-const exec = require('cordova/exec');
+const exec = cordova.require('cordova/exec');
 
 declare global {
   interface Window {
