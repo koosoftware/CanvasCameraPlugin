@@ -101,7 +101,7 @@ export interface CanvasCameraData {
   output?: CanvasCameraDataOutput;
 }
 
-export interface CanvasCameraInterface {
+export declare class CanvasCamera {
   onCapture: CanvasCameraPluginCallback | undefined;
   nativeClass: string;
   canvas: CanvasCameraRenderers;
@@ -178,7 +178,7 @@ export interface CanvasCameraDataImage {
   timestamp?: number;
 }
 
-export interface CanvasCameraRendererInterface {
+export interface CanvasCameraRenderer {
   data: CanvasCameraDataImage | undefined;
   size: CanvasCameraCanvasSize | undefined;
   image: HTMLImageElement | undefined;
@@ -210,7 +210,7 @@ export interface CanvasCameraRendererInterface {
 }
 
 // CanvasCameraFrame export type definitions :
-export interface CanvasCameraFrameInterface {
+export interface CanvasCameraFrame {
   ratio: number;
   sx: number;
   sy: number;
@@ -233,7 +233,7 @@ export interface CanvasCameraFrameInterface {
  * @export
  * @class CanvasCameraFrame
  */
-export class CanvasCameraFrame implements CanvasCameraFrameInterface {
+class CanvasCameraFrameImplementation implements CanvasCameraFrame {
   public ratio = 0;
 
   public sx = 0;
@@ -322,7 +322,7 @@ export class CanvasCameraFrame implements CanvasCameraFrameInterface {
  * @export
  * @class CanvasCameraRenderer
  */
-export class CanvasCameraRenderer implements CanvasCameraRendererInterface {
+class CanvasCameraRendererImplementation implements CanvasCameraRenderer {
   public data: CanvasCameraDataImage | undefined;
   public size: CanvasCameraCanvasSize | undefined;
   public image: HTMLImageElement | undefined;
@@ -624,7 +624,7 @@ export class CanvasCameraRenderer implements CanvasCameraRendererInterface {
  * @export
  * @class CanvasCamera
  */
-export default class CanvasCamera implements CanvasCameraInterface {
+class CanvasCameraImplementation implements CanvasCamera {
   public static instance: CanvasCamera;
   public onCapture: CanvasCameraPluginCallback | undefined;
   public nativeClass = 'CanvasCamera';
@@ -632,10 +632,10 @@ export default class CanvasCamera implements CanvasCameraInterface {
   public options: CanvasCameraUserOptions = {} as CanvasCameraUserOptions;
 
   static getInstance() {
-    if (this.instance && this.instance instanceof CanvasCamera) {
+    if (this.instance && this.instance instanceof CanvasCameraImplementation) {
       return this.instance;
     }
-    return (this.instance = new CanvasCamera());
+    return (this.instance = new CanvasCameraImplementation());
   }
 
   static initialize(
@@ -903,12 +903,12 @@ export default class CanvasCamera implements CanvasCameraInterface {
     element: HTMLCanvasElement,
     renderer: CanvasCameraRenderer
   ) {
-    const frame = new CanvasCameraFrame(image, element, renderer);
+    const frame = new CanvasCameraFrameImplementation(image, element, renderer);
     return frame.initialize();
   }
 
   createRenderer(element: HTMLCanvasElement, canvasCamera: CanvasCamera) {
-    const renderer = new CanvasCameraRenderer(element, canvasCamera);
+    const renderer = new CanvasCameraRendererImplementation(element, canvasCamera);
     return renderer.initialize();
   }
 
@@ -917,7 +917,7 @@ export default class CanvasCamera implements CanvasCameraInterface {
       for (const renderer in this.canvas) {
         if (
           this.canvas.hasOwnProperty(renderer) &&
-          this.canvas[renderer] instanceof CanvasCameraRenderer
+          this.canvas[renderer] instanceof CanvasCameraRendererImplementation
         ) {
           if (this.canvas[renderer]?.disabled()) {
             this.canvas[renderer]?.enable();
@@ -932,7 +932,7 @@ export default class CanvasCamera implements CanvasCameraInterface {
       for (const renderer in this.canvas) {
         if (
           this.canvas.hasOwnProperty(renderer) &&
-          this.canvas[renderer] instanceof CanvasCameraRenderer
+          this.canvas[renderer] instanceof CanvasCameraRendererImplementation
         ) {
           if (this.canvas[renderer]?.enabled()) {
             this.canvas[renderer]?.disable();
@@ -1064,4 +1064,4 @@ export default class CanvasCamera implements CanvasCameraInterface {
   }
 }
 
-module.exports = CanvasCamera;
+module.exports = CanvasCameraImplementation;

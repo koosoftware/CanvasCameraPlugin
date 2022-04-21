@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CanvasCameraRenderer = exports.CanvasCameraFrame = void 0;
 var exec = require('cordova/exec');
-var CanvasCameraFrame = (function () {
-    function CanvasCameraFrame(image, element, renderer) {
+var CanvasCameraFrameImplementation = (function () {
+    function CanvasCameraFrameImplementation(image, element, renderer) {
         this.ratio = 0;
         this.sx = 0;
         this.sy = 0;
@@ -17,7 +16,7 @@ var CanvasCameraFrame = (function () {
         this.element = element;
         this.renderer = renderer;
     }
-    CanvasCameraFrame.prototype.initialize = function () {
+    CanvasCameraFrameImplementation.prototype.initialize = function () {
         if (this.image && this.element) {
             this.renderer.canvasCamera.dispatch('beforeframeinitialization', this);
             this.sx = 0;
@@ -39,25 +38,24 @@ var CanvasCameraFrame = (function () {
         }
         return this;
     };
-    CanvasCameraFrame.prototype.recycle = function () {
+    CanvasCameraFrameImplementation.prototype.recycle = function () {
         for (var property in this) {
             if (this.hasOwnProperty(property)) {
                 delete this[property];
             }
         }
     };
-    return CanvasCameraFrame;
+    return CanvasCameraFrameImplementation;
 }());
-exports.CanvasCameraFrame = CanvasCameraFrame;
-var CanvasCameraRenderer = (function () {
-    function CanvasCameraRenderer(element, canvasCamera) {
+var CanvasCameraRendererImplementation = (function () {
+    function CanvasCameraRendererImplementation(element, canvasCamera) {
         this.buffer = [];
         this.available = true;
         this.fullscreen = false;
         this.element = element;
         this.canvasCamera = canvasCamera;
     }
-    CanvasCameraRenderer.prototype.initialize = function () {
+    CanvasCameraRendererImplementation.prototype.initialize = function () {
         var _this = this;
         if (this.element) {
             this.context = this.element.getContext('2d');
@@ -90,19 +88,19 @@ var CanvasCameraRenderer = (function () {
         }
         return this;
     };
-    CanvasCameraRenderer.prototype.onOrientationChange = function () {
+    CanvasCameraRendererImplementation.prototype.onOrientationChange = function () {
         if (this.canvasCamera.getUIOrientation() !== this.orientation) {
             this.invert();
         }
         this.buffer = [];
     };
-    CanvasCameraRenderer.prototype.clear = function () {
+    CanvasCameraRendererImplementation.prototype.clear = function () {
         if (this.context) {
             this.context.clearRect(0, 0, this.element.width, this.element.height);
         }
         return this;
     };
-    CanvasCameraRenderer.prototype.draw = function (frame) {
+    CanvasCameraRendererImplementation.prototype.draw = function (frame) {
         if (frame && this.context) {
             this.canvasCamera.dispatch('beforeframerendering', this, frame);
             this.context.drawImage(frame.image, frame.sx, frame.sy, frame.sWidth, frame.sHeight, frame.dx, frame.dy, frame.dWidth, frame.dHeight);
@@ -110,14 +108,14 @@ var CanvasCameraRenderer = (function () {
         }
         return this;
     };
-    CanvasCameraRenderer.prototype.bufferize = function (data) {
+    CanvasCameraRendererImplementation.prototype.bufferize = function (data) {
         if (this.enabled()) {
             this.buffer.push(data);
             this.run();
         }
         return this;
     };
-    CanvasCameraRenderer.prototype.run = function () {
+    CanvasCameraRendererImplementation.prototype.run = function () {
         var _this = this;
         if (this.enabled()) {
             window.requestAnimationFrame(function () {
@@ -132,7 +130,7 @@ var CanvasCameraRenderer = (function () {
         }
         return this;
     };
-    CanvasCameraRenderer.prototype.render = function (data) {
+    CanvasCameraRendererImplementation.prototype.render = function (data) {
         var _a, _b;
         if (this.enabled()) {
             if (this.canvasCamera &&
@@ -168,21 +166,21 @@ var CanvasCameraRenderer = (function () {
         }
         return this;
     };
-    CanvasCameraRenderer.prototype.enable = function () {
+    CanvasCameraRendererImplementation.prototype.enable = function () {
         this.available = true;
         return this;
     };
-    CanvasCameraRenderer.prototype.disable = function () {
+    CanvasCameraRendererImplementation.prototype.disable = function () {
         this.available = false;
         return this;
     };
-    CanvasCameraRenderer.prototype.enabled = function () {
+    CanvasCameraRendererImplementation.prototype.enabled = function () {
         return this.available;
     };
-    CanvasCameraRenderer.prototype.disabled = function () {
+    CanvasCameraRendererImplementation.prototype.disabled = function () {
         return !this.available;
     };
-    CanvasCameraRenderer.prototype.invert = function () {
+    CanvasCameraRendererImplementation.prototype.invert = function () {
         if (this.size) {
             var iSize = this.size;
             if (this.size.width && !isNaN(this.size.width)) {
@@ -215,7 +213,7 @@ var CanvasCameraRenderer = (function () {
         }
         return this;
     };
-    CanvasCameraRenderer.prototype.resize = function () {
+    CanvasCameraRendererImplementation.prototype.resize = function () {
         if (this.size) {
             var pixelRatio = window.devicePixelRatio || 1;
             if (this.size.width && !isNaN(this.size.width)) {
@@ -251,7 +249,7 @@ var CanvasCameraRenderer = (function () {
         }
         return this;
     };
-    CanvasCameraRenderer.prototype.setSize = function (size, auto) {
+    CanvasCameraRendererImplementation.prototype.setSize = function (size, auto) {
         this.fullscreen = !!auto || false;
         if (size && size.width && size.height) {
             if (!isNaN(Number(size.width)) && !isNaN(Number(size.height))) {
@@ -266,92 +264,91 @@ var CanvasCameraRenderer = (function () {
         }
         return this;
     };
-    CanvasCameraRenderer.prototype.setOnBeforeDraw = function (onBeforeDraw) {
+    CanvasCameraRendererImplementation.prototype.setOnBeforeDraw = function (onBeforeDraw) {
         if (onBeforeDraw && typeof onBeforeDraw === 'function') {
             this.onBeforeDraw = onBeforeDraw;
         }
         return this;
     };
-    CanvasCameraRenderer.prototype.setOnAfterDraw = function (onAfterDraw) {
+    CanvasCameraRendererImplementation.prototype.setOnAfterDraw = function (onAfterDraw) {
         if (onAfterDraw && typeof onAfterDraw === 'function') {
             this.onAfterDraw = onAfterDraw;
         }
         return this;
     };
-    return CanvasCameraRenderer;
+    return CanvasCameraRendererImplementation;
 }());
-exports.CanvasCameraRenderer = CanvasCameraRenderer;
-var CanvasCamera = (function () {
-    function CanvasCamera() {
+var CanvasCameraImplementation = (function () {
+    function CanvasCameraImplementation() {
         this.nativeClass = 'CanvasCamera';
         this.canvas = {};
         this.options = {};
     }
-    CanvasCamera.getInstance = function () {
-        if (this.instance && this.instance instanceof CanvasCamera) {
+    CanvasCameraImplementation.getInstance = function () {
+        if (this.instance && this.instance instanceof CanvasCameraImplementation) {
             return this.instance;
         }
-        return (this.instance = new CanvasCamera());
+        return (this.instance = new CanvasCameraImplementation());
     };
-    CanvasCamera.initialize = function (fcanvas, tcanvas) {
+    CanvasCameraImplementation.initialize = function (fcanvas, tcanvas) {
         return this.getInstance().initialize(fcanvas, tcanvas);
     };
-    CanvasCamera.start = function (userOptions, onError, onSuccess) {
+    CanvasCameraImplementation.start = function (userOptions, onError, onSuccess) {
         return this.getInstance().start(userOptions, onError, onSuccess);
     };
-    CanvasCamera.stop = function (onError, onSuccess) {
+    CanvasCameraImplementation.stop = function (onError, onSuccess) {
         return this.getInstance().stop(onError, onSuccess);
     };
-    CanvasCamera.cameraPosition = function (cameraFacing, onError, onSuccess) {
+    CanvasCameraImplementation.cameraPosition = function (cameraFacing, onError, onSuccess) {
         return this.getInstance().cameraPosition(cameraFacing, onError, onSuccess);
     };
-    CanvasCamera.flashMode = function (flashMode, onError, onSuccess) {
+    CanvasCameraImplementation.flashMode = function (flashMode, onError, onSuccess) {
         return this.getInstance().flashMode(flashMode, onError, onSuccess);
     };
-    CanvasCamera.prototype.beforeFrameRendering = function (listener) {
+    CanvasCameraImplementation.prototype.beforeFrameRendering = function (listener) {
         return this.triggerEvent('beforeFrameRendering', listener);
     };
-    CanvasCamera.beforeFrameRendering = function (listener) {
+    CanvasCameraImplementation.beforeFrameRendering = function (listener) {
         return this.getInstance().beforeFrameRendering(listener);
     };
-    CanvasCamera.prototype.afterFrameRendering = function (listener) {
+    CanvasCameraImplementation.prototype.afterFrameRendering = function (listener) {
         return this.triggerEvent('afterFrameRendering', listener);
     };
-    CanvasCamera.afterFrameRendering = function (listener) {
+    CanvasCameraImplementation.afterFrameRendering = function (listener) {
         return this.getInstance().afterFrameRendering(listener);
     };
-    CanvasCamera.prototype.beforeFrameInitialization = function (listener) {
+    CanvasCameraImplementation.prototype.beforeFrameInitialization = function (listener) {
         return this.triggerEvent('beforeFrameInitialization', listener);
     };
-    CanvasCamera.beforeFrameInitialization = function (listener) {
+    CanvasCameraImplementation.beforeFrameInitialization = function (listener) {
         return this.getInstance().beforeFrameInitialization(listener);
     };
-    CanvasCamera.prototype.afterFrameInitialization = function (listener) {
+    CanvasCameraImplementation.prototype.afterFrameInitialization = function (listener) {
         return this.triggerEvent('afterFrameInitialization', listener);
     };
-    CanvasCamera.afterFrameInitialization = function (listener) {
+    CanvasCameraImplementation.afterFrameInitialization = function (listener) {
         return this.getInstance().afterFrameInitialization(listener);
     };
-    CanvasCamera.prototype.beforeRenderingPresets = function (listener) {
+    CanvasCameraImplementation.prototype.beforeRenderingPresets = function (listener) {
         return this.triggerEvent('beforeRenderingPresets', listener);
     };
-    CanvasCamera.beforeRenderingPresets = function (listener) {
+    CanvasCameraImplementation.beforeRenderingPresets = function (listener) {
         return this.getInstance().beforeRenderingPresets(listener);
     };
-    CanvasCamera.prototype.afterRenderingPresets = function (listener) {
+    CanvasCameraImplementation.prototype.afterRenderingPresets = function (listener) {
         return this.triggerEvent('afterRenderingPresets', listener);
     };
-    CanvasCamera.afterRenderingPresets = function (listener) {
+    CanvasCameraImplementation.afterRenderingPresets = function (listener) {
         return this.getInstance().afterRenderingPresets(listener);
     };
-    CanvasCamera.prototype.triggerEvent = function (eventName, listener) {
+    CanvasCameraImplementation.prototype.triggerEvent = function (eventName, listener) {
         var listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
         window.addEventListener(listenerName, function (e) {
             listener.call(e.detail.context, e, e.detail.data);
         }.bind(this));
         return this;
     };
-    CanvasCamera.prototype.dispatch = function (eventName, context, data) {
+    CanvasCameraImplementation.prototype.dispatch = function (eventName, context, data) {
         var listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
         var event = new CustomEvent(listenerName, {
             detail: {
@@ -361,7 +358,7 @@ var CanvasCamera = (function () {
         });
         window.dispatchEvent(event);
     };
-    CanvasCamera.prototype.initialize = function (fcanvas, tcanvas) {
+    CanvasCameraImplementation.prototype.initialize = function (fcanvas, tcanvas) {
         if (fcanvas instanceof HTMLCanvasElement) {
             this.canvas.fullsize = this.createRenderer(fcanvas, this);
             if (tcanvas instanceof HTMLCanvasElement) {
@@ -378,7 +375,7 @@ var CanvasCamera = (function () {
             }
         }
     };
-    CanvasCamera.prototype.start = function (userOptions, onError, onSuccess) {
+    CanvasCameraImplementation.prototype.start = function (userOptions, onError, onSuccess) {
         var _this = this;
         this.options = userOptions;
         this.setRenderingPresets();
@@ -393,7 +390,7 @@ var CanvasCamera = (function () {
             }
         }, this.nativeClass, 'startCapture', [this.options]);
     };
-    CanvasCamera.prototype.stop = function (onError, onSuccess) {
+    CanvasCameraImplementation.prototype.stop = function (onError, onSuccess) {
         this.disableRenderers();
         exec(function (data) {
             if (onSuccess && typeof onSuccess === 'function') {
@@ -405,7 +402,7 @@ var CanvasCamera = (function () {
             }
         }, this.nativeClass, 'stopCapture', []);
     };
-    CanvasCamera.prototype.flashMode = function (flashMode, onError, onSuccess) {
+    CanvasCameraImplementation.prototype.flashMode = function (flashMode, onError, onSuccess) {
         exec(function (data) {
             if (onSuccess && typeof onSuccess === 'function') {
                 onSuccess(data);
@@ -416,7 +413,7 @@ var CanvasCamera = (function () {
             }
         }, this.nativeClass, 'flashMode', [flashMode]);
     };
-    CanvasCamera.prototype.cameraPosition = function (cameraFacing, onError, onSuccess) {
+    CanvasCameraImplementation.prototype.cameraPosition = function (cameraFacing, onError, onSuccess) {
         var _this = this;
         this.disableRenderers();
         exec(function (data) {
@@ -430,7 +427,7 @@ var CanvasCamera = (function () {
             }
         }, this.nativeClass, 'cameraPosition', [cameraFacing]);
     };
-    CanvasCamera.prototype.capture = function (data) {
+    CanvasCameraImplementation.prototype.capture = function (data) {
         if ((data === null || data === void 0 ? void 0 : data.output) && data.output.images) {
             if (this.options.use &&
                 data.output.images.fullsize &&
@@ -450,20 +447,20 @@ var CanvasCamera = (function () {
             this.onCapture(data);
         }
     };
-    CanvasCamera.prototype.createFrame = function (image, element, renderer) {
-        var frame = new CanvasCameraFrame(image, element, renderer);
+    CanvasCameraImplementation.prototype.createFrame = function (image, element, renderer) {
+        var frame = new CanvasCameraFrameImplementation(image, element, renderer);
         return frame.initialize();
     };
-    CanvasCamera.prototype.createRenderer = function (element, canvasCamera) {
-        var renderer = new CanvasCameraRenderer(element, canvasCamera);
+    CanvasCameraImplementation.prototype.createRenderer = function (element, canvasCamera) {
+        var renderer = new CanvasCameraRendererImplementation(element, canvasCamera);
         return renderer.initialize();
     };
-    CanvasCamera.prototype.enableRenderers = function () {
+    CanvasCameraImplementation.prototype.enableRenderers = function () {
         var _a, _b;
         if (this.canvas && 'object' === typeof this.canvas) {
             for (var renderer in this.canvas) {
                 if (this.canvas.hasOwnProperty(renderer) &&
-                    this.canvas[renderer] instanceof CanvasCameraRenderer) {
+                    this.canvas[renderer] instanceof CanvasCameraRendererImplementation) {
                     if ((_a = this.canvas[renderer]) === null || _a === void 0 ? void 0 : _a.disabled()) {
                         (_b = this.canvas[renderer]) === null || _b === void 0 ? void 0 : _b.enable();
                     }
@@ -471,12 +468,12 @@ var CanvasCamera = (function () {
             }
         }
     };
-    CanvasCamera.prototype.disableRenderers = function () {
+    CanvasCameraImplementation.prototype.disableRenderers = function () {
         var _a, _b;
         if (this.canvas && 'object' === typeof this.canvas) {
             for (var renderer in this.canvas) {
                 if (this.canvas.hasOwnProperty(renderer) &&
-                    this.canvas[renderer] instanceof CanvasCameraRenderer) {
+                    this.canvas[renderer] instanceof CanvasCameraRendererImplementation) {
                     if ((_a = this.canvas[renderer]) === null || _a === void 0 ? void 0 : _a.enabled()) {
                         (_b = this.canvas[renderer]) === null || _b === void 0 ? void 0 : _b.disable();
                     }
@@ -484,7 +481,7 @@ var CanvasCamera = (function () {
             }
         }
     };
-    CanvasCamera.prototype.setRenderingPresets = function () {
+    CanvasCameraImplementation.prototype.setRenderingPresets = function () {
         this.dispatch('beforerenderingpresets', this);
         switch (this.options.use) {
             case 'data':
@@ -510,7 +507,7 @@ var CanvasCamera = (function () {
         this.dispatch('afterrenderingpresets', this);
         return this;
     };
-    CanvasCamera.prototype.getUISize = function () {
+    CanvasCameraImplementation.prototype.getUISize = function () {
         var size = {
             width: window.innerWidth,
             height: window.innerHeight,
@@ -542,7 +539,7 @@ var CanvasCamera = (function () {
         }
         return size;
     };
-    CanvasCamera.prototype.getUIOrientation = function () {
+    CanvasCameraImplementation.prototype.getUIOrientation = function () {
         if (isNaN(Number(window.orientation))) {
             return 'landscape';
         }
@@ -555,7 +552,7 @@ var CanvasCamera = (function () {
             }
         }
     };
-    CanvasCamera.prototype.setRenderersSize = function (size) {
+    CanvasCameraImplementation.prototype.setRenderersSize = function (size) {
         if (size.width && size.height) {
             if (this.canvas.fullsize) {
                 var canvasWidth = Number(size.width);
@@ -585,8 +582,7 @@ var CanvasCamera = (function () {
         }
         return this;
     };
-    return CanvasCamera;
+    return CanvasCameraImplementation;
 }());
-exports.default = CanvasCamera;
-module.exports = CanvasCamera;
+module.exports = CanvasCameraImplementation;
 //# sourceMappingURL=CanvasCamera.js.map
