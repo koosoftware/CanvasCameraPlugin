@@ -532,10 +532,13 @@ export class SomeAngularComponent implements AfterViewInit {
 ## Contributing
 
 1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+2. Install development dependencies with `npm i`
+3. Create your feature branch (`git checkout -b my-new-feature`)
+4. `src/browser/src/CanvasCamera.ts` is the source typescript file
+5. `npm run build` or `npm run watch` to build a new `www/CanvasCamera.js` output file
+6. Commit your changes (`git commit -am 'Added some feature'`)
+7. Push to the branch (`git push origin my-new-feature`)
+8. Create new Pull Request
 
 ## License
 
