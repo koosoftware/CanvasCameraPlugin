@@ -1,7 +1,7 @@
 {
   "name": "com.virtuoworks.cordova-plugin-canvascamera",
-  "version": "1.2.1",
-  "description": "A Cordova plugin to display video from the device's camera into an HTML canvas element.",
+  "version": "1.2.2",
+  "description": "A Cordova/Capacitor plugin to display video from the device's camera into an HTML canvas element.",
   "repository": "https://github.com/VirtuoWorks/CanvasCameraPlugin.git",
   "main": "www/CanvasCamera.js",
   "typings": "www/CanvasCamera.d.ts",
@@ -20,9 +20,13 @@
     ]
   },
   "keywords": [
+    "ecosystem:capacitor",
     "ecosystem:cordova",
     "cordova-android",
     "cordova-ios",
+    "capacitor-android",
+    "capacitor-ios",
+    "capacitor",
     "cordova",
     "camera",
     "canvas"
