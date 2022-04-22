@@ -44,6 +44,7 @@ var CanvasCameraFrameImplementation = (function () {
                 delete this[property];
             }
         }
+        return this;
     };
     return CanvasCameraFrameImplementation;
 }());
@@ -93,6 +94,7 @@ var CanvasCameraRendererImplementation = (function () {
             this.invert();
         }
         this.buffer = [];
+        return this;
     };
     CanvasCameraRendererImplementation.prototype.clear = function () {
         if (this.context) {
@@ -265,13 +267,13 @@ var CanvasCameraRendererImplementation = (function () {
         return this;
     };
     CanvasCameraRendererImplementation.prototype.setOnBeforeDraw = function (onBeforeDraw) {
-        if (onBeforeDraw && typeof onBeforeDraw === 'function') {
+        if (onBeforeDraw && 'function' === typeof onBeforeDraw) {
             this.onBeforeDraw = onBeforeDraw;
         }
         return this;
     };
     CanvasCameraRendererImplementation.prototype.setOnAfterDraw = function (onAfterDraw) {
-        if (onAfterDraw && typeof onAfterDraw === 'function') {
+        if (onAfterDraw && 'function' === typeof onAfterDraw) {
             this.onAfterDraw = onAfterDraw;
         }
         return this;
@@ -344,7 +346,22 @@ var CanvasCameraImplementation = (function () {
     CanvasCameraImplementation.prototype.triggerEvent = function (eventName, listener) {
         var listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
         window.addEventListener(listenerName, function (e) {
-            listener.call(e.detail.context, e, e.detail.data);
+            if (2 === listener.length &&
+                e.detail.context instanceof CanvasCameraRendererImplementation &&
+                e.detail.data &&
+                e.detail.data instanceof CanvasCameraFrameImplementation) {
+                listener.call(e.detail.context, e, e.detail.data);
+            }
+            else {
+                if (1 === listener.length) {
+                    if (e.detail.context instanceof CanvasCameraImplementation) {
+                        listener.call(e.detail.context, e);
+                    }
+                    if (e.detail.context instanceof CanvasCameraFrameImplementation) {
+                        listener.call(e.detail.context, e);
+                    }
+                }
+            }
         }.bind(this));
         return this;
     };
@@ -357,6 +374,7 @@ var CanvasCameraImplementation = (function () {
             },
         });
         window.dispatchEvent(event);
+        return this;
     };
     CanvasCameraImplementation.prototype.initialize = function (fcanvas, tcanvas) {
         if (fcanvas instanceof HTMLCanvasElement) {
@@ -374,58 +392,63 @@ var CanvasCameraImplementation = (function () {
                 }
             }
         }
+        return this;
     };
     CanvasCameraImplementation.prototype.start = function (userOptions, onError, onSuccess) {
         var _this = this;
         this.options = userOptions;
         this.setRenderingPresets();
-        if (onSuccess && typeof onSuccess === 'function') {
+        if (onSuccess && 'function' === typeof onSuccess) {
             this.onCapture = onSuccess;
         }
         this.enableRenderers();
         exec(this.capture.bind(this), function (error) {
             _this.disableRenderers();
-            if (onError && typeof onError === 'function') {
+            if (onError && 'function' === typeof onError) {
                 onError(error);
             }
         }, this.nativeClass, 'startCapture', [this.options]);
+        return this;
     };
     CanvasCameraImplementation.prototype.stop = function (onError, onSuccess) {
         this.disableRenderers();
         exec(function (data) {
-            if (onSuccess && typeof onSuccess === 'function') {
+            if (onSuccess && 'function' === typeof onSuccess) {
                 onSuccess(data);
             }
         }, function (error) {
-            if (onError && typeof onError === 'function') {
+            if (onError && 'function' === typeof onError) {
                 onError(error);
             }
         }, this.nativeClass, 'stopCapture', []);
+        return this;
     };
     CanvasCameraImplementation.prototype.flashMode = function (flashMode, onError, onSuccess) {
         exec(function (data) {
-            if (onSuccess && typeof onSuccess === 'function') {
+            if (onSuccess && 'function' === typeof onSuccess) {
                 onSuccess(data);
             }
         }, function (error) {
-            if (onError && typeof onError === 'function') {
+            if (onError && 'function' === typeof onError) {
                 onError(error);
             }
         }, this.nativeClass, 'flashMode', [flashMode]);
+        return this;
     };
     CanvasCameraImplementation.prototype.cameraPosition = function (cameraFacing, onError, onSuccess) {
         var _this = this;
         this.disableRenderers();
         exec(function (data) {
             _this.enableRenderers();
-            if (onSuccess && typeof onSuccess === 'function') {
+            if (onSuccess && 'function' === typeof onSuccess) {
                 onSuccess(data);
             }
         }, function (error) {
-            if (onError && typeof onError === 'function') {
+            if (onError && 'function' === typeof onError) {
                 onError(error);
             }
         }, this.nativeClass, 'cameraPosition', [cameraFacing]);
+        return this;
     };
     CanvasCameraImplementation.prototype.capture = function (data) {
         if ((data === null || data === void 0 ? void 0 : data.output) && data.output.images) {
@@ -443,9 +466,10 @@ var CanvasCameraImplementation = (function () {
                 }
             }
         }
-        if (this.onCapture && typeof this.onCapture === 'function') {
+        if (this.onCapture && 'function' === typeof this.onCapture) {
             this.onCapture(data);
         }
+        return this;
     };
     CanvasCameraImplementation.prototype.createFrame = function (image, element, renderer) {
         var frame = new CanvasCameraFrameImplementation(image, element, renderer);
@@ -467,6 +491,7 @@ var CanvasCameraImplementation = (function () {
                 }
             }
         }
+        return this;
     };
     CanvasCameraImplementation.prototype.disableRenderers = function () {
         var _a, _b;
@@ -480,6 +505,7 @@ var CanvasCameraImplementation = (function () {
                 }
             }
         }
+        return this;
     };
     CanvasCameraImplementation.prototype.setRenderingPresets = function () {
         this.dispatch('beforerenderingpresets', this);
@@ -491,13 +517,13 @@ var CanvasCameraImplementation = (function () {
                 this.options.use = 'file';
         }
         if (this.options.onBeforeDraw &&
-            typeof this.options.onBeforeDraw === 'function') {
+            'function' === typeof this.options.onBeforeDraw) {
             if (this.canvas.fullsize) {
                 this.canvas.fullsize.setOnBeforeDraw(this.options.onBeforeDraw);
             }
         }
         if (this.options.onAfterDraw &&
-            typeof this.options.onAfterDraw === 'function') {
+            'function' === typeof this.options.onAfterDraw) {
             if (this.canvas.fullsize) {
                 this.canvas.fullsize.setOnAfterDraw(this.options.onAfterDraw);
             }
@@ -527,7 +553,7 @@ var CanvasCameraImplementation = (function () {
             }
             if (!isNaN(canvasWidth) && !isNaN(canvasHeight)) {
                 size.auto = false;
-                if (this.getUIOrientation() === 'portrait') {
+                if ('portrait' === this.getUIOrientation()) {
                     size.width = canvasHeight;
                     size.height = canvasWidth;
                 }
