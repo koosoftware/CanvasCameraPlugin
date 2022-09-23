@@ -42,6 +42,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.jiangdg.ausbc.CameraClient;
+
 public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface {
     private static final String TAG = "CanvasCamera";
     private static final boolean LOGGING = false; //false to disable logging
@@ -98,6 +100,8 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private Activity mActivity = null;
     private TextureView mTextureView = null;
     private CameraHandlerThread mThread = null;
+
+    private CameraClient mCameraClient = null;
 
     @Override
     public String getFilenameSuffix() {
