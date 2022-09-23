@@ -1,0 +1,8 @@
+repositories {
+    jcenter()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.koosoftware.AndroidUSBCamera:libausbc:3.2.8.1'
+}
