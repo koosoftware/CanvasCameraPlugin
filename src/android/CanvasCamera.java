@@ -82,7 +82,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     protected int mFps;
     protected int mWidth;
     protected int mHeight;
-    protected String mUse = "data";
+    protected String mUse;
     protected int mCameraFacing;
     protected String mFlashMode;
     protected int mCanvasHeight;
@@ -113,7 +113,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private TextureView mTextureView = null;
     private CameraHandlerThread mThread = null;
 
-    private CameraClient mCameraClient = null;
+    private CameraClient mAndroidUSBCameraClient = null;
 
     @Override
     public String getFilenameSuffix() {
@@ -277,7 +277,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         }
     };
 
-    /*private final Camera.PreviewCallback mCameraPreviewCallback = new Camera.PreviewCallback() {
+    private final Camera.PreviewCallback mCameraPreviewCallback = new Camera.PreviewCallback() {
         @Override
         public void onPreviewFrame(final byte[] data, Camera camera) {
             Runnable renderFrame = new Runnable() {
@@ -431,73 +431,76 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
             cordova.getThreadPool().submit(renderFrame);
         }
-    };*/
+    };
 
     private final TextureView.SurfaceTextureListener mSurfaceTextureListener = new TextureView.SurfaceTextureListener() {
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-            mCameraClient = getCameraClient();
-            mCamera = getCameraInstance();
+            
+            if (mCameraFacing == -1) {
+                // Android USB Camera
+                mAndroidUSBCameraClient = getAndroidUSBCameraClient(640, 480);
 
-            if (mCameraClient != null) {
-                mTextureView.setVisibility(View.INVISIBLE);
-                mTextureView.setAlpha(0);
+                mCamera = getCameraInstance();
 
-                try {
-                    setPreviewParameters();
+                if (mAndroidUSBCameraClient != null) {
+                    mTextureView.setVisibility(View.INVISIBLE);
+                    mTextureView.setAlpha(0);
 
-                    IAspectRatio camView = new AspectRatioTextureView(mActivity);
+                    try {
+                        setPreviewParameters();
 
+                        IAspectRatio camView = new AspectRatioTextureView(mActivity);
 
-                    mCameraClient.openCamera(camView, false);
+                        mAndroidUSBCameraClient.openCamera(camView, false);
 
-                    mCameraClient.addPreviewDataCallBack(mPreviewDataCallBack);
+                        mAndroidUSBCameraClient.addPreviewDataCallBack(mPreviewDataCallBack);
 
+                        mFileId = 0;
 
+                        mPreviewing = true;
+                        if (LOGGING) Log.i(TAG, "Android USB Camera client started.");
 
-                    mFileId = 0;
-
-                    mPreviewing = true;
-                    if (LOGGING) Log.i(TAG, "Camera client started.");
-
-                } catch (Exception e) {
+                    } catch (Exception e) {
+                        mPreviewing = false;
+                        if (LOGGING) Log.e(TAG, "Failed to init preview: " + e.getMessage());
+                        stopCamera();
+                    }
+                } else {
                     mPreviewing = false;
-                    if (LOGGING) Log.e(TAG, "Failed to init preview: " + e.getMessage());
-                    stopCamera();
+                    if (LOGGING) Log.w(TAG, "Could not get Android USB Camera client.");
                 }
+
             } else {
-                mPreviewing = false;
-                if (LOGGING) Log.w(TAG, "Could not get camera client.");
+                mCamera = getCameraInstance();
+
+                if (mCamera != null) {
+
+                    mTextureView.setVisibility(View.INVISIBLE);
+                    mTextureView.setAlpha(0);
+
+                    try {
+                        setPreviewParameters();
+
+                        mCamera.setPreviewTexture(surface);
+                        mCamera.setDisplayOrientation(mDisplayOrientation);
+                        mCamera.setErrorCallback(mCameraErrorCallback);
+                        mCamera.setPreviewCallback(mCameraPreviewCallback);
+
+                        mFileId = 0;
+
+                        mCamera.startPreview();
+                        mPreviewing = true;
+                        if (LOGGING) Log.i(TAG, "Camera [" + mCameraId + "] started.");
+                    } catch (Exception e) {
+                        mPreviewing = false;
+                        if (LOGGING) Log.e(TAG, "Failed to init preview: " + e.getMessage());
+                        stopCamera();
+                    }
+                } else {
+                    mPreviewing = false;
+                    if (LOGGING) Log.w(TAG, "Could not get camera instance.");
+                }
             }
-
-            /*mCamera = getCameraInstance();
-
-            if (mCamera != null) {
-
-                mTextureView.setVisibility(View.INVISIBLE);
-                mTextureView.setAlpha(0);
-
-                try {
-                    setPreviewParameters();
-
-                    mCamera.setPreviewTexture(surface);
-                    mCamera.setDisplayOrientation(mDisplayOrientation);
-                    mCamera.setErrorCallback(mCameraErrorCallback);
-                    mCamera.setPreviewCallback(mCameraPreviewCallback);
-
-                    mFileId = 0;
-
-                    mCamera.startPreview();
-                    mPreviewing = true;
-                    if (LOGGING) Log.i(TAG, "Camera [" + mCameraId + "] started.");
-                } catch (Exception e) {
-                    mPreviewing = false;
-                    if (LOGGING) Log.e(TAG, "Failed to init preview: " + e.getMessage());
-                    stopCamera();
-                }
-            } else {
-                mPreviewing = false;
-                if (LOGGING) Log.w(TAG, "Could not get camera instance.");
-            }*/
         }
 
         public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
@@ -565,11 +568,11 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     @Override
     public void onStop() {
         super.onStop();
-        /*if (mCamera != null) {
+        if (mCamera != null) {
             stopCamera();
-        }*/
-        if (mCameraClient != null) {
-            mCameraClient.closeCamera();
+        }
+        if (mAndroidUSBCameraClient != null) {
+            mAndroidUSBCameraClient.closeCamera();
         }
         if (mTextureView != null) {
             removePreviewSurface();
@@ -738,26 +741,11 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         } else {
             mStartCaptureCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.INVALID_ACTION, getPluginResultMessage("Unable to start capture.")));
         }
-
-        /*mStartCaptureCallbackContext = callbackContext;
-
-        if (startCamera()) {
-            deferPluginResultCallback(mStartCaptureCallbackContext);
-            if (LOGGING) Log.i(TAG, "Capture started !");
-        } else {
-            mStartCaptureCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.INVALID_ACTION, getPluginResultMessage("Unable to start capture.")));
-        }*/
     }
 
     private synchronized void startCapture(JSONArray args, CallbackContext callbackContext) {
 
         mStartCaptureCallbackContext = callbackContext;
-
-        setDefaults();
-
-        startCapture(mStartCaptureCallbackContext);
-
-        /*mStartCaptureCallbackContext = callbackContext;
 
         // init parameters - default values
         setDefaults();
@@ -771,7 +759,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
             return;
         }
 
-        startCapture(mStartCaptureCallbackContext);*/
+        startCapture(mStartCaptureCallbackContext);
     }
 
     private synchronized void stopCapture(CallbackContext stopCaptureCallbackContext) {
@@ -911,33 +899,35 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     }
 
     private void stopCamera() {
-        if (mCameraClient != null) {
-            try {
-                mCameraClient.closeCamera();
-                mCameraClient = null;
-                if (LOGGING) Log.i(TAG, "Camera client stopped.");
-            } catch (Exception e) {
-                if (LOGGING)
-                    Log.e(TAG, "Could not stop camera client : " + e.getMessage());
+        if (mCameraFacing == -1) {
+            // Android USB Camera
+            if (mAndroidUSBCameraClient != null) {
+                try {
+                    mAndroidUSBCameraClient.closeCamera();
+                    mAndroidUSBCameraClient = null;
+                    if (LOGGING) Log.i(TAG, "Android USB Camera client stopped.");
+                } catch (Exception e) {
+                    if (LOGGING)
+                        Log.e(TAG, "Could not stop Android USB Camera client : " + e.getMessage());
+                }
+            }
+        } else {
+            if (mCamera != null) {
+                try {
+                    mCamera.stopPreview();
+                    mCamera.setPreviewCallback(null);
+                    mCamera.release();
+                    mCamera = null;
+                    if (LOGGING) Log.i(TAG, "Camera [" + mCameraId + "] stopped.");
+                    mCameraId = 0;
+                } catch (Exception e) {
+                    if (LOGGING)
+                        Log.e(TAG, "Could not stop camera [" + mCameraId + "] : " + e.getMessage());
+                }
             }
         }
 
         mPreviewing = false;
-
-        /*if (mCamera != null) {
-            try {
-                mCamera.stopPreview();
-                mCamera.setPreviewCallback(null);
-                mCamera.release();
-                mCamera = null;
-                if (LOGGING) Log.i(TAG, "Camera [" + mCameraId + "] stopped.");
-                mCameraId = 0;
-            } catch (Exception e) {
-                if (LOGGING)
-                    Log.e(TAG, "Could not stop camera [" + mCameraId + "] : " + e.getMessage());
-            }
-        }
-        mPreviewing = false;*/
     }
 
     private int getCameraRotation() {
@@ -1128,18 +1118,18 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
-    private CameraClient getCameraClient() {
-        CameraRequest camReq = new CameraRequest.Builder()
+    private CameraClient getAndroidUSBCameraClient(int previewWidth, int previewHeight) {
+        CameraRequest cameraReq = new CameraRequest.Builder()
                 .setFrontCamera(false)
-                .setPreviewWidth(640)
-                .setPreviewHeight(480)
+                .setPreviewWidth(previewWidth)
+                .setPreviewHeight(previewHeight)
                 .create();
 
         return CameraClient.newBuilder(mActivity)
                 .setEnableGLES(true)
                 .setRawImage(true)
                 .setCameraStrategy(new CameraUvcStrategy(mActivity))
-                .setCameraRequest(camReq)
+                .setCameraRequest(cameraReq)
                 .setDefaultRotateType(RotateType.ANGLE_0)
                 .openDebug(true)
                 .build();
@@ -1720,16 +1710,20 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private int getCameraFacing(String option) {
         if ("front".equals(option)) {
             return Camera.CameraInfo.CAMERA_FACING_FRONT;
-        } else {
+        } else if ("back".equals(option)) {
             return Camera.CameraInfo.CAMERA_FACING_BACK;
+        } else {
+            return -1;
         }
     }
 
     private String getCameraFacingToString(int constant) {
         if (constant == Camera.CameraInfo.CAMERA_FACING_FRONT) {
             return "front";
-        } else {
+        } else if (constant == Camera.CameraInfo.CAMERA_FACING_BACK) {
             return "back";
+        } else {
+            return "usb";
         }
     }
 
