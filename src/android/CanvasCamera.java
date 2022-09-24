@@ -438,7 +438,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
             
             if (mCameraFacing == -1) {
                 // Android USB Camera
-                mAndroidUSBCameraClient = getAndroidUSBCameraClient(640, 480);
+                mAndroidUSBCameraClient = getAndroidUSBCameraClient();
 
                 mCamera = getCameraInstance();
 
@@ -1118,11 +1118,11 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
     }
 
-    private CameraClient getAndroidUSBCameraClient(int previewWidth, int previewHeight) {
+    private CameraClient getAndroidUSBCameraClient() {
         CameraRequest cameraReq = new CameraRequest.Builder()
                 .setFrontCamera(false)
-                .setPreviewWidth(previewWidth)
-                .setPreviewHeight(previewHeight)
+                .setPreviewWidth(640)
+                .setPreviewHeight(480)
                 .create();
 
         return CameraClient.newBuilder(mActivity)
@@ -1145,7 +1145,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
             for (cameraId = 0; cameraId < cameraCount; cameraId++) {
                 Camera.getCameraInfo(cameraId, cameraInfo);
-                if (cameraInfo.facing == mCameraFacing) {
+                if (cameraInfo.facing == mCameraFacing || mCameraFacing == -1) {
                     if (LOGGING) Log.i(TAG, "Trying to open camera : " + cameraId);
                     try {
                         mCameraId = cameraId;
