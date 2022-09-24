@@ -142,7 +142,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                 //byte[] fullsizeData = dataToJpeg(data, mPreviewSize.width, mPreviewSize.height);
                 byte[] fullsizeData = dataToJpeg(data, 640, 480);
 
-                fullsizeData = getResizedAndRotatedImage(fullsizeData, mCanvasWidth, mCanvasHeight, 0);
+                fullsizeData = getResizedAndRotatedImage(fullsizeData, mCanvasWidth, mCanvasHeight, displayOrientation);
 
                 // JSON output for fullsize image
                 JSONObject fullsize = new JSONObject();
@@ -948,6 +948,11 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     }
 
     private int getDisplayOrientation() {
+        if (mCameraFacing == -1) {
+            // External USB Camera
+            return 0;
+        }
+
         int degrees = getDisplayRotation();
 
         Camera.CameraInfo info = new Camera.CameraInfo();
