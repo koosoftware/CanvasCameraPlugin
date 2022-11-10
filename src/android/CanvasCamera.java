@@ -440,7 +440,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                 // Android USB Camera
                 mAndroidUSBCameraClient = getAndroidUSBCameraClient();
 
-                mCamera = getCameraInstance();
+                //mCamera = getCameraInstance();
 
                 if (mAndroidUSBCameraClient != null) {
                     mTextureView.setVisibility(View.INVISIBLE);
@@ -931,6 +931,11 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     }
 
     private int getCameraRotation() {
+        if (mCameraFacing == -1) {
+            // External USB Camera
+            return 0;
+        }
+
         int degrees = getDisplayRotation();
 
         Camera.CameraInfo info = new Camera.CameraInfo();
@@ -996,7 +1001,19 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     }
 
     private void setPreviewParameters() {
-        if (mCamera != null) {
+        if (mCamera == null) {
+            // If using Android USB camera
+            Camera.Size camPreviewSize = null;
+            camPreviewSize.width = 320;
+            camPreviewSize.height = 240;
+
+            mDisplayOrientation = getDisplayOrientation();
+            mPreviewSize = camPreviewSize;
+            mPreviewFpsRange = new int[]{15000, 15000};
+            mPreviewFocusMode = "continuous-video";
+            mFlashMode = "off";   
+            mPreviewFormat = ImageFormat.NV21;
+        } else {
             // set display orientation
             mDisplayOrientation = getDisplayOrientation();
             Camera.Parameters parameters = mCamera.getParameters();
@@ -1150,7 +1167,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
             for (cameraId = 0; cameraId < cameraCount; cameraId++) {
                 Camera.getCameraInfo(cameraId, cameraInfo);
-                if (cameraInfo.facing == mCameraFacing || mCameraFacing == -1) {
+                if (cameraInfo.facing == mCameraFacing) {
                     if (LOGGING) Log.i(TAG, "Trying to open camera : " + cameraId);
                     try {
                         mCameraId = cameraId;
