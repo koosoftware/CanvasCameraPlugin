@@ -1003,10 +1003,9 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private void setPreviewParameters() {
         if (mCamera == null) {
             // If using Android USB camera
-            Camera.Size camPreviewSize = new Camera.Size(320, 240);
 
             mDisplayOrientation = getDisplayOrientation();
-            mPreviewSize = camPreviewSize;
+            //mPreviewSize = camPreviewSize;
             mPreviewFpsRange = new int[]{15000, 15000};
             mPreviewFocusMode = "continuous-video";
             mFlashMode = "off";   
@@ -1670,6 +1669,9 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                     if (LOGGING)
                         Log.e(TAG, "Cannot put data.preview.height into JSON result : " + e.getMessage());
                 }
+            } else {
+                preview.put("width", 640);
+                preview.put("height", 480);
             }
 
             JSONObject camera = new JSONObject();
