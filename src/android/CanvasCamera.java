@@ -1003,9 +1003,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private void setPreviewParameters() {
         if (mCamera == null) {
             // If using Android USB camera
-            Camera.Size camPreviewSize = null;
-            camPreviewSize.width = 320;
-            camPreviewSize.height = 240;
+            Camera.Size camPreviewSize = new Camera.Size(320, 240);
 
             mDisplayOrientation = getDisplayOrientation();
             mPreviewSize = camPreviewSize;
