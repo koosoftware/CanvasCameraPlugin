@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Toast;
+import android.hardware.usb.UsbDevice;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +33,8 @@ import com.jiangdg.ausbc.callback.IPreviewDataCallBack;
 import com.jiangdg.ausbc.camera.bean.CameraRequest;
 import com.jiangdg.ausbc.render.env.RotateType;
 import com.jiangdg.ausbc.camera.CameraUvcStrategy;
+import com.jiangdg.ausbc.MultiCameraClient;
+import com.jiangdg.ausbc.callback.IDeviceConnectCallBack;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -54,6 +57,7 @@ import java.util.Map;
 
 import com.jiangdg.ausbc.widget.AspectRatioTextureView;
 import com.jiangdg.ausbc.widget.IAspectRatio;
+import com.jiangdg.ausbc.callback.ICameraStateCallBack;
 import com.virtuoworks.cordova.plugin.canvascamera.*;
 
 public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface {
@@ -114,6 +118,8 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private CameraHandlerThread mThread = null;
 
     private CameraClient mAndroidUSBCameraClient = null;
+    private MultiCameraClient mCameraClient = null;
+    private HashMap<Integer, MultiCameraClient.Camera> mCameraMap = new HashMap<>();
 
     @Override
     public String getFilenameSuffix() {
@@ -551,12 +557,62 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         }
     };
 
+    private final IDeviceConnectCallBack mDeviceConnectCallback = new IDeviceConnectCallBack() {
+        @Override
+        public void onAttachDev(UsbDevice device) {
+            if (device == null) {
+                return;
+            }
+
+            MultiCameraClient.Camera multiCam = new  MultiCameraClient.Camera(this, device);
+            mCameraMap[device.deviceId] = this;
+            onCameraAttached(this);
+
+            if (isAutoRequestPermission()) {
+                mCameraClient.requestPermission(device);
+            }
+        }
+
+        @Override
+        public void onDetachDec(UsbDevice device) {
+            mCameraMap.remove(device.deviceId);
+            setUsbControlBlock(null);
+            onCameraDetached(this);
+        }
+
+        @Override
+        public void onConnectDev(UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
+            if (device == null || ctrlBlock == null) {
+                return;
+            }
+
+            //mCameraMap[device.deviceId];
+            setUsbControlBlock(ctrlBlock);
+            onCameraConnected(this);
+        }
+
+        @Override
+        public void onDisConnectDec(UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
+            //mCameraMap[device.deviceId];
+            onCameraDisConnected(this);
+        }
+
+        @Override
+        public void onCancelDev(UsbDevice device) {
+            //mCameraMap[device.deviceId];
+            onCameraDisConnected(this);
+        }
+    };
+
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         mActivity = cordova.getActivity();
         mDir = mActivity.getExternalCacheDir();
         super.initialize(cordova, webView);
         deleteCachedImageFiles();
+
+        mCameraClient = new MultiCameraClient(this, mDeviceConnectCallback);
+        mCameraClient.register();
     }
 
     @Override
@@ -585,6 +641,14 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         super.onDestroy();
         cordova.getThreadPool().shutdownNow();
         deleteCachedImageFiles();
+
+        for (Map.Entry<Integer, Camera> set : mCameraMap.entrySet()) {
+            set.getValue().closeCamera();
+        }
+        mCameraMap.clear();
+        mCameraClient.unRegister();
+        mCameraClient.destroy();
+        mCameraClient = null;
     }
 
     @Override
