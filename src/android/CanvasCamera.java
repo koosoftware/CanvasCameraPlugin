@@ -642,7 +642,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         cordova.getThreadPool().shutdownNow();
         deleteCachedImageFiles();
 
-        for (Map.Entry<Integer, Camera> set : mCameraMap.entrySet()) {
+        for (Map.Entry<Integer, MultiCameraClient.Camera> set : mCameraMap.entrySet()) {
             set.getValue().closeCamera();
         }
         mCameraMap.clear();
@@ -848,7 +848,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
     private synchronized void getDeviceList(CallbackContext getDeviceListCallbackContext) {
         try {
-            mCameraClient.getDeviceList();
+            List<UsbDevice> usbDeviceList = mCameraClient.getDeviceList(null);
             if (LOGGING) Log.i(TAG, "Get camera device list");
             getDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, getPluginResultMessage("Get device list.")));
         } catch (Exception e) {
