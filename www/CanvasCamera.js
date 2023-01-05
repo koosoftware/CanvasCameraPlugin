@@ -426,7 +426,7 @@ var CanvasCameraImplementation = (function () {
         }, this.nativeClass, 'stopCapture', []);
         return this;
     };
-    CanvasCameraImplementation.prototype.getDeviceList = function () {
+    CanvasCameraImplementation.prototype.getDeviceList = function (onError, onSuccess) {
         exec(function (data) {
             if (onSuccess && 'function' === typeof onSuccess) {
                 onSuccess(data);
