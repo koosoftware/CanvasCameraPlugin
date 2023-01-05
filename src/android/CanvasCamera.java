@@ -35,7 +35,7 @@ import com.jiangdg.ausbc.render.env.RotateType;
 import com.jiangdg.ausbc.camera.CameraUvcStrategy;
 import com.jiangdg.ausbc.MultiCameraClient;
 import com.jiangdg.ausbc.callback.IDeviceConnectCallBack;
-import com.jiangdg.ausbc.usb.USBMonitor;
+import com.jiangdg.usb.USBMonitor;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
