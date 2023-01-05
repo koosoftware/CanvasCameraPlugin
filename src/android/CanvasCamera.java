@@ -35,6 +35,7 @@ import com.jiangdg.ausbc.render.env.RotateType;
 import com.jiangdg.ausbc.camera.CameraUvcStrategy;
 import com.jiangdg.ausbc.MultiCameraClient;
 import com.jiangdg.ausbc.callback.IDeviceConnectCallBack;
+import com.jiangdg.ausbc.usb.USBMonitor;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -564,20 +565,19 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                 return;
             }
 
-            MultiCameraClient.Camera multiCam = new  MultiCameraClient.Camera(this, device);
-            mCameraMap[device.deviceId] = this;
-            onCameraAttached(this);
+            MultiCameraClient.Camera multiCam = new  MultiCameraClient.Camera(mActivity, device);
+            mCameraMap.put(device.getDeviceId(), multiCam);
+            //onCameraAttached(this);
 
-            if (isAutoRequestPermission()) {
-                mCameraClient.requestPermission(device);
-            }
+            mCameraClient.requestPermission(device);
         }
 
         @Override
         public void onDetachDec(UsbDevice device) {
-            mCameraMap.remove(device.deviceId);
-            setUsbControlBlock(null);
-            onCameraDetached(this);
+            MultiCameraClient.Camera currMultiCam = mCameraMap.get(device.getDeviceId());
+            currMultiCam.setUsbControlBlock(null);
+            mCameraMap.remove(device.getDeviceId());
+            //onCameraDetached(this);
         }
 
         @Override
@@ -586,21 +586,21 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                 return;
             }
 
-            //mCameraMap[device.deviceId];
-            setUsbControlBlock(ctrlBlock);
-            onCameraConnected(this);
+            MultiCameraClient.Camera currMultiCam = mCameraMap.get(device.getDeviceId());
+            currMultiCam.setUsbControlBlock(ctrlBlock);
+            //onCameraConnected(this);
         }
 
         @Override
         public void onDisConnectDec(UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
-            //mCameraMap[device.deviceId];
-            onCameraDisConnected(this);
+            MultiCameraClient.Camera currMultiCam = mCameraMap.get(device.getDeviceId());
+            //onCameraDisConnected(this);
         }
 
         @Override
         public void onCancelDev(UsbDevice device) {
-            //mCameraMap[device.deviceId];
-            onCameraDisConnected(this);
+            MultiCameraClient.Camera currMultiCam = mCameraMap.get(device.getDeviceId());
+            //onCameraDisConnected(this);
         }
     };
 
@@ -611,7 +611,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         super.initialize(cordova, webView);
         deleteCachedImageFiles();
 
-        mCameraClient = new MultiCameraClient(this, mDeviceConnectCallback);
+        mCameraClient = new MultiCameraClient(mActivity, mDeviceConnectCallback);
         mCameraClient.register();
     }
 
