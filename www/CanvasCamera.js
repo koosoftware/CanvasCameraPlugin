@@ -301,6 +301,9 @@ var CanvasCameraImplementation = (function () {
     CanvasCameraImplementation.stop = function (onError, onSuccess) {
         return this.getInstance().stop(onError, onSuccess);
     };
+    CanvasCameraImplementation.getDeviceList = function (onError, onSuccess) {
+        return this.getInstance().getDeviceList(onError, onSuccess);
+    };
     CanvasCameraImplementation.cameraPosition = function (cameraFacing, onError, onSuccess) {
         return this.getInstance().cameraPosition(cameraFacing, onError, onSuccess);
     };
@@ -421,6 +424,18 @@ var CanvasCameraImplementation = (function () {
                 onError(error);
             }
         }, this.nativeClass, 'stopCapture', []);
+        return this;
+    };
+    CanvasCameraImplementation.prototype.getDeviceList = function () {
+        exec(function (data) {
+            if (onSuccess && 'function' === typeof onSuccess) {
+                onSuccess(data);
+            }
+        }, function (error) {
+            if (onError && 'function' === typeof onError) {
+                onError(error);
+            }
+        }, this.nativeClass, 'getDeviceList', []);
         return this;
     };
     CanvasCameraImplementation.prototype.flashMode = function (flashMode, onError, onSuccess) {

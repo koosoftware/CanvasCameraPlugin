@@ -701,6 +701,14 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                     }
                 });
                 return true;
+            } else if ("getDeviceList".equals(action)) {
+                if (LOGGING) Log.i(TAG, "Starting async getDeviceList thread...");
+                mActivity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        getDeviceList(mCurrentCallbackContext);
+                    }
+                });
+                return true;
             } else if ("flashMode".equals(action)) {
                 if (LOGGING) Log.i(TAG, "Starting async flashMode thread...");
                 mActivity.runOnUiThread(new Runnable() {
@@ -835,6 +843,17 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         } catch (Exception e) {
             if (LOGGING) Log.e(TAG, "Could not stop capture : " + e.getMessage());
             stopCaptureCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, getPluginResultMessage(e.getMessage())));
+        }
+    }
+
+    private synchronized void getDeviceList(CallbackContext getDeviceListCallbackContext) {
+        try {
+            mCameraClient.getDeviceList();
+            if (LOGGING) Log.i(TAG, "Get camera device list");
+            getDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, getPluginResultMessage("Get device list.")));
+        } catch (Exception e) {
+            if (LOGGING) Log.e(TAG, "Could not get camera device list : " + e.getMessage());
+            getDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, getPluginResultMessage(e.getMessage())));
         }
     }
 
