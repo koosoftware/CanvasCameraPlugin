@@ -849,8 +849,23 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private synchronized void getDeviceList(CallbackContext getDeviceListCallbackContext) {
         try {
             List<UsbDevice> usbDeviceList = mCameraClient.getDeviceList(null);
+
+            JSONArray jaUsbDeviceList = new JSONArray();
+            for (UsbDevice usbDevice: usbDeviceList) {
+                JSONObject joUsbDevice = new JSONObject();
+                joUsbDevice.put("DeviceId", usbDevice.getDeviceId());
+                joUsbDevice.put("DeviceName", usbDevice.getDeviceName());
+                joUsbDevice.put("ManufacturerName", usbDevice.getManufacturerName());
+                joUsbDevice.put("SerialNumber", usbDevice.getSerialNumber());
+                joUsbDevice.put("ProductId", usbDevice.getProductId());
+                joUsbDevice.put("ProductName", usbDevice.getProductName());
+                joUsbDevice.put("VendorId", usbDevice.getVendorId());
+
+                jaUsbDeviceList.put(joUsbDevice);
+            }
+
             if (LOGGING) Log.i(TAG, "Get camera device list");
-            getDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, getPluginResultMessage("Get device list.")));
+            getDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, jaUsbDeviceList));
         } catch (Exception e) {
             if (LOGGING) Log.e(TAG, "Could not get camera device list : " + e.getMessage());
             getDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, getPluginResultMessage(e.getMessage())));
