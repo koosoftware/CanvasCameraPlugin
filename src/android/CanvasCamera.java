@@ -709,6 +709,14 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                     }
                 });
                 return true;
+            } else if ("getCurrentDevice".equals(action)) {
+                if (LOGGING) Log.i(TAG, "Starting async getCurrentDevice thread...");
+                mActivity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        getCurrentDevice(mCurrentCallbackContext);
+                    }
+                });
+                return true;
             } else if ("switchCamera".equals(action)) {
                 if (LOGGING) Log.i(TAG, "Starting async switchCamera thread...");
                 mActivity.runOnUiThread(new Runnable() {
@@ -877,6 +885,40 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         } catch (Exception e) {
             if (LOGGING) Log.e(TAG, "Could not get camera device list : " + e.getMessage());
             getDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, getPluginResultMessage(e.getMessage())));
+        }
+    }
+
+    private synchronized void getCurrentDevice(CallbackContext getCurrentDeviceCallbackContext) {
+        JSONObject joUsbDevice = new JSONObject();
+
+        try {
+            if (mAndroidUSBCameraClient != null) {
+                CameraRequest camReq = mAndroidUSBCameraClient.getCameraRequest();
+                if (camReq != null) {
+                    String deviceId = camReq.getCameraId();
+                    if (deviceId != null && deviceId.length() > 0) {
+                        List<UsbDevice> usbDeviceList = mCameraClient.getDeviceList(null);
+
+                        for (UsbDevice usbDevice: usbDeviceList) {
+                            if (String.valueOf(usbDevice.getDeviceId()).equalsIgnoreCase(deviceId)) {
+                                joUsbDevice.put("DeviceId", usbDevice.getDeviceId());
+                                joUsbDevice.put("DeviceName", usbDevice.getDeviceName());
+                                joUsbDevice.put("ManufacturerName", usbDevice.getManufacturerName());
+                                joUsbDevice.put("SerialNumber", usbDevice.getSerialNumber());
+                                joUsbDevice.put("ProductId", usbDevice.getProductId());
+                                joUsbDevice.put("ProductName", usbDevice.getProductName());
+                                joUsbDevice.put("VendorId", usbDevice.getVendorId());
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (LOGGING) Log.i(TAG, "Get current camera device");
+            getCurrentDeviceCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, joUsbDevice));
+        } catch (Exception e) {
+            if (LOGGING) Log.e(TAG, "Could not get current camera device : " + e.getMessage());
+            getCurrentDeviceCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, getPluginResultMessage(e.getMessage())));
         }
     }
 
