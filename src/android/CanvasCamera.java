@@ -709,6 +709,14 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                     }
                 });
                 return true;
+            } else if ("switchCamera".equals(action)) {
+                if (LOGGING) Log.i(TAG, "Starting async switchCamera thread...");
+                mActivity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        switchCamera(mArgs, mCurrentCallbackContext);
+                    }
+                });
+                return true;
             } else if ("flashMode".equals(action)) {
                 if (LOGGING) Log.i(TAG, "Starting async flashMode thread...");
                 mActivity.runOnUiThread(new Runnable() {
@@ -869,6 +877,21 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         } catch (Exception e) {
             if (LOGGING) Log.e(TAG, "Could not get camera device list : " + e.getMessage());
             getDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, getPluginResultMessage(e.getMessage())));
+        }
+    }
+
+    private synchronized void switchCamera(JSONArray args, CallbackContext switchCameraCallbackContext) {
+        try {
+            if (mAndroidUSBCameraClient != null) {
+                String deviceId = args.getString(0);
+                mAndroidUSBCameraClient.switchCamera(deviceId);
+            }
+
+            if (LOGGING) Log.i(TAG, "Switch camera device");
+            switchCameraCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, getPluginResultMessage("Camera switched.")));
+        } catch (Exception e) {
+            if (LOGGING) Log.e(TAG, "Could not switch camera device : " + e.getMessage());
+            switchCameraCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, getPluginResultMessage(e.getMessage())));
         }
     }
 
