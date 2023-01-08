@@ -13,7 +13,7 @@ export declare type CanvasCameraUseImageAs = 'data' | 'file';
 export declare type CanvasCameraCameraFacing = 'front' | 'back';
 export declare type CanvasCameraPluginCallback = <D>(data: D) => void;
 export declare type CanvasCameraPluginResultCallbackFunction = (data: CanvasCameraData) => void;
-export declare type CanvasCameraEventMethodName = 'beforeFrameRendering' | 'afterFrameRendering' | 'beforeFrameInitialization' | 'afterFrameInitialization' | 'beforeRenderingPresets' | 'afterRenderingPresets';
+export declare type CanvasCameraEventMethodName = 'beforeFrameRendering' | 'afterFrameRendering' | 'beforeFrameInitialization' | 'afterFrameInitialization' | 'beforeRenderingPresets' | 'afterRenderingPresets' | 'onDeviceChanged';
 export declare type CanvasCameraEventName = Lowercase<CanvasCameraEventMethodName>;
 export interface CanvasCameraCanvasElements {
     fullsize: HTMLCanvasElement;
@@ -82,6 +82,7 @@ export default interface CanvasCameraConstructor {
     new (): CanvasCamera;
     instance: CanvasCamera;
     getInstance(): CanvasCamera;
+    onDeviceChanged(listener: CanvasCameraDeviceEventListener): CanvasCamera;
     beforeFrameRendering(listener: CanvasCameraRendererEventListener): CanvasCamera;
     afterFrameRendering(listener: CanvasCameraRendererEventListener): CanvasCamera;
     beforeFrameInitialization(listener: CanvasCameraFrameEventListener): CanvasCamera;
@@ -102,6 +103,7 @@ export interface CanvasCamera {
     nativeClass: string;
     canvas: CanvasCameraRenderers;
     options: CanvasCameraUserOptions;
+    onDeviceChanged(listener: CanvasCameraDeviceEventListener): CanvasCamera;
     beforeFrameRendering(listener: CanvasCameraRendererEventListener): CanvasCamera;
     afterFrameRendering(listener: CanvasCameraRendererEventListener): CanvasCamera;
     beforeFrameInitialization(listener: CanvasCameraFrameEventListener): CanvasCamera;
@@ -132,6 +134,7 @@ export declare type CanvasCameraEvent = CustomEvent<CanvasCameraEventDetail>;
 export declare type CanvasCameraEventListener = (this: CanvasCamera, event: CanvasCameraEvent) => void;
 export declare type CanvasCameraFrameEventListener = (this: CanvasCameraFrame, event: CanvasCameraEvent) => void;
 export declare type CanvasCameraRendererEventListener = (this: CanvasCameraRenderer, event: CanvasCameraEvent, frame: CanvasCameraFrame) => void;
+export declare type CanvasCameraDeviceEventListener = (this: CanvasCamera, event: CanvasCameraEvent, deviceList: CanvasCameraDevice[]) => void;
 export interface CanvasCameraCanvasSize {
     height: number;
     width: number;

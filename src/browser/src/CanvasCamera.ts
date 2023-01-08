@@ -22,6 +22,7 @@ export type CanvasCameraPluginResultCallbackFunction = (
 ) => void;
 
 export type CanvasCameraEventMethodName =
+  | 'onDeviceChanged'
   | 'beforeFrameRendering'
   | 'afterFrameRendering'
   | 'beforeFrameInitialization'
@@ -106,6 +107,9 @@ export default interface CanvasCameraConstructor {
   new (): CanvasCamera;
   instance: CanvasCamera;
   getInstance(): CanvasCamera;
+  onDeviceChanged(
+    listener: CanvasCameraDeviceEventListener
+  ): CanvasCamera;
   beforeFrameRendering(
     listener: CanvasCameraRendererEventListener
   ): CanvasCamera;
@@ -149,6 +153,9 @@ export interface CanvasCamera {
   nativeClass: string;
   canvas: CanvasCameraRenderers;
   options: CanvasCameraUserOptions;
+  onDeviceChanged(
+    listener: CanvasCameraDeviceEventListener
+  ): CanvasCamera;
   beforeFrameRendering(
     listener: CanvasCameraRendererEventListener
   ): CanvasCamera;
@@ -227,6 +234,22 @@ export type CanvasCameraRendererEventListener = (
   event: CanvasCameraEvent,
   frame: CanvasCameraFrame
 ) => void;
+export type CanvasCameraDeviceEventListener = (
+  this: CanvasCamera,
+  event: CanvasCameraEvent,
+  deviceList: CanvasCameraDevice[]
+) => void;
+
+export interface CanvasCameraDevice {
+  deviceId: number;
+  deviceName: string;
+  manufacturerName: string;
+  serialNumber: string;
+  productId: number;
+  productName: string;
+  vendorId: number;
+}
+
 export interface CanvasCameraCanvasSize {
   height: number;
   width: number;
@@ -772,6 +795,14 @@ const CanvasCameraImplementation: CanvasCameraConstructor = class CanvasCameraIm
     return this.getInstance().flashMode(flashMode, onError, onSuccess);
   }
 
+  onDeviceChanged(listener: CanvasCameraDeviceEventListener) {
+    return this.triggerEvent('onDeviceChanged', listener);
+  }
+
+  static onDeviceChanged(listener: CanvasCameraDeviceEventListener) {
+    return this.getInstance().onDeviceChanged(listener);
+  }
+
   beforeFrameRendering(listener: CanvasCameraRendererEventListener) {
     return this.triggerEvent('beforeFrameRendering', listener);
   }
@@ -826,6 +857,7 @@ const CanvasCameraImplementation: CanvasCameraConstructor = class CanvasCameraIm
       | CanvasCameraEventListener
       | CanvasCameraFrameEventListener
       | CanvasCameraRendererEventListener
+      | CanvasCameraDeviceEventListener
   ): CanvasCamera {
     const listenerName = (this.nativeClass + '-' + eventName).toLowerCase();
     window.addEventListener(

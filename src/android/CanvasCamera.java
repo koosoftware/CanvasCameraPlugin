@@ -100,6 +100,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private JSONArray mArgs;
     private CallbackContext mCurrentCallbackContext;
     private CallbackContext mStartCaptureCallbackContext;
+    private CallbackContext mGetDeviceListCallbackContext;
 
     private File mDir;
     private int mFileId = 0;
@@ -588,6 +589,24 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
             MultiCameraClient.Camera currMultiCam = mCameraMap.get(device.getDeviceId());
             currMultiCam.setUsbControlBlock(ctrlBlock);
+
+            List<UsbDevice> usbDeviceList = mCameraClient.getDeviceList(null);
+
+            JSONArray jaUsbDeviceList = new JSONArray();
+            for (UsbDevice usbDevice: usbDeviceList) {
+                JSONObject joUsbDevice = new JSONObject();
+                joUsbDevice.put("DeviceId", usbDevice.getDeviceId());
+                joUsbDevice.put("DeviceName", usbDevice.getDeviceName());
+                joUsbDevice.put("ManufacturerName", usbDevice.getManufacturerName());
+                joUsbDevice.put("SerialNumber", usbDevice.getSerialNumber());
+                joUsbDevice.put("ProductId", usbDevice.getProductId());
+                joUsbDevice.put("ProductName", usbDevice.getProductName());
+                joUsbDevice.put("VendorId", usbDevice.getVendorId());
+
+                jaUsbDeviceList.put(joUsbDevice);
+            }
+
+            mGetDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, jaUsbDeviceList));
             //onCameraConnected(this);
         }
 
@@ -864,6 +883,8 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
     private synchronized void getDeviceList(CallbackContext getDeviceListCallbackContext) {
         try {
+            mGetDeviceListCallbackContext = getDeviceListCallbackContext;
+
             List<UsbDevice> usbDeviceList = mCameraClient.getDeviceList(null);
 
             JSONArray jaUsbDeviceList = new JSONArray();
