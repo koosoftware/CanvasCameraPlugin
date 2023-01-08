@@ -593,7 +593,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
             JSONArray jaUsbDeviceList = getAllCameraDevices();
 
             PluginResult result = new PluginResult(PluginResult.Status.OK, jaUsbDeviceList);
-            //result.setKeepCallback(true);
+            result.setKeepCallback(true);
             mGetDeviceListCallbackContext.sendPluginResult(result);
         }
 
@@ -604,7 +604,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
             JSONArray jaUsbDeviceList = getAllCameraDevices();
             
             PluginResult result = new PluginResult(PluginResult.Status.OK, jaUsbDeviceList);
-            //result.setKeepCallback(true);
+            result.setKeepCallback(true);
             mGetDeviceListCallbackContext.sendPluginResult(result);
         }
 
