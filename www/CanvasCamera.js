@@ -316,12 +316,6 @@ var CanvasCameraImplementation = (function () {
     CanvasCameraImplementation.flashMode = function (flashMode, onError, onSuccess) {
         return this.getInstance().flashMode(flashMode, onError, onSuccess);
     };
-    CanvasCameraImplementation.prototype.onDeviceChanged = function (listener) {
-        return this.triggerEvent('onDeviceChanged', listener);
-    };
-    CanvasCameraImplementation.onDeviceChanged = function (listener) {
-        return this.getInstance().onDeviceChanged(listener);
-    };
     CanvasCameraImplementation.prototype.beforeFrameRendering = function (listener) {
         return this.triggerEvent('beforeFrameRendering', listener);
     };

@@ -590,30 +590,22 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
             MultiCameraClient.Camera currMultiCam = mCameraMap.get(device.getDeviceId());
             currMultiCam.setUsbControlBlock(ctrlBlock);
 
-            List<UsbDevice> usbDeviceList = mCameraClient.getDeviceList(null);
+            JSONArray jaUsbDeviceList = getAllCameraDevices();
 
-            JSONArray jaUsbDeviceList = new JSONArray();
-            for (UsbDevice usbDevice: usbDeviceList) {
-                JSONObject joUsbDevice = new JSONObject();
-                joUsbDevice.put("DeviceId", usbDevice.getDeviceId());
-                joUsbDevice.put("DeviceName", usbDevice.getDeviceName());
-                joUsbDevice.put("ManufacturerName", usbDevice.getManufacturerName());
-                joUsbDevice.put("SerialNumber", usbDevice.getSerialNumber());
-                joUsbDevice.put("ProductId", usbDevice.getProductId());
-                joUsbDevice.put("ProductName", usbDevice.getProductName());
-                joUsbDevice.put("VendorId", usbDevice.getVendorId());
-
-                jaUsbDeviceList.put(joUsbDevice);
-            }
-
-            mGetDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, jaUsbDeviceList));
-            //onCameraConnected(this);
+            PluginResult result = new PluginResult(PluginResult.Status.OK, jaUsbDeviceList);
+            result.setKeepCallback(true);
+            mGetDeviceListCallbackContext.sendPluginResult(result);
         }
 
         @Override
         public void onDisConnectDec(UsbDevice device, USBMonitor.UsbControlBlock ctrlBlock) {
             MultiCameraClient.Camera currMultiCam = mCameraMap.get(device.getDeviceId());
-            //onCameraDisConnected(this);
+
+            JSONArray jaUsbDeviceList = getAllCameraDevices();
+            
+            PluginResult result = new PluginResult(PluginResult.Status.OK, jaUsbDeviceList);
+            result.setKeepCallback(true);
+            mGetDeviceListCallbackContext.sendPluginResult(result);
         }
 
         @Override
@@ -881,13 +873,12 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         }
     }
 
-    private synchronized void getDeviceList(CallbackContext getDeviceListCallbackContext) {
-        try {
-            mGetDeviceListCallbackContext = getDeviceListCallbackContext;
+    private JSONArray getAllCameraDevices() {
+        JSONArray jaUsbDeviceList = new JSONArray();
 
+        try {
             List<UsbDevice> usbDeviceList = mCameraClient.getDeviceList(null);
 
-            JSONArray jaUsbDeviceList = new JSONArray();
             for (UsbDevice usbDevice: usbDeviceList) {
                 JSONObject joUsbDevice = new JSONObject();
                 joUsbDevice.put("DeviceId", usbDevice.getDeviceId());
@@ -900,12 +891,27 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
                 jaUsbDeviceList.put(joUsbDevice);
             }
+        } catch (Exception e) {
+            if (LOGGING) Log.e(TAG, "Fail to get all camera devices : " + e.getMessage());
+        }
+
+        return jaUsbDeviceList;
+    }
+
+    private synchronized void getDeviceList(CallbackContext getDeviceListCallbackContext) {
+        try {
+            mGetDeviceListCallbackContext = getDeviceListCallbackContext;
+
+            JSONArray jaUsbDeviceList = getAllCameraDevices();
 
             if (LOGGING) Log.i(TAG, "Get camera device list");
-            getDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, jaUsbDeviceList));
+
+            PluginResult result = new PluginResult(PluginResult.Status.OK, jaUsbDeviceList);
+            result.setKeepCallback(true);
+            mGetDeviceListCallbackContext.sendPluginResult(result);
         } catch (Exception e) {
             if (LOGGING) Log.e(TAG, "Could not get camera device list : " + e.getMessage());
-            getDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, getPluginResultMessage(e.getMessage())));
+            mGetDeviceListCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, getPluginResultMessage(e.getMessage())));
         }
     }
 
