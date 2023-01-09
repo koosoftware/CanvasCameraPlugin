@@ -46,7 +46,6 @@
 
     <platform name="android">
       <framework src="src/android/plugin.gradle" custom="true" type="gradleReference"/>
-      <framework src="com.github.jiangdongguo.AndroidUSBCamera:libuvc:3.2.10" />
 
       <config-file parent="/*" target="res/xml/config.xml">
         <feature name="CanvasCamera">
