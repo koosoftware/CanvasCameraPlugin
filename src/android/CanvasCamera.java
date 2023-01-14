@@ -82,7 +82,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private static final int SEC_CAMERA_POSITION = 3;
 
     private final static String[] FILENAMES = {"fullsize", "thumbnail"};
-    private final static String[] PERMISSIONS = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private final static String[] PERMISSIONS = {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     protected int mFps;
     protected int mWidth;
@@ -694,6 +694,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         mCurrentCallbackContext = callbackContext;
 
         if (PermissionHelper.hasPermission(this, Manifest.permission.CAMERA) &&
+                PermissionHelper.hasPermission(this, Manifest.permission.RECORD_AUDIO) &&
                 PermissionHelper.hasPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) &&
                 PermissionHelper.hasPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
             if ("startCapture".equals(action)) {
