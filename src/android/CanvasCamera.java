@@ -122,6 +122,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private CameraClient mAndroidUSBCameraClient = null;
     private MultiCameraClient mCameraClient = null;
     private HashMap<Integer, MultiCameraClient.Camera> mCameraMap = new HashMap<>();
+    private String mDeviceId = null;
 
     @Override
     public String getFilenameSuffix() {
@@ -852,13 +853,17 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
         // parse options
         try {
-            parseOptions(args.getJSONObject(0));
+            JSONObject joOptions = args.getJSONObject(0);
+            parseOptions(joOptions);
         } catch (Exception e) {
             if (LOGGING) Log.e(TAG, "Options parsing error : " + e.getMessage());
             mStartCaptureCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION, getPluginResultMessage(e.getMessage())));
             return;
         }
 
+        if (joOptions.deviceId != null) {
+            mDeviceId = joOptions.deviceId;
+        }
         startCapture(mStartCaptureCallbackContext);
     }
 
@@ -1338,7 +1343,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         return CameraClient.newBuilder(mActivity)
                 .setEnableGLES(true)
                 .setRawImage(true)
-                .setCameraStrategy(new CameraUvcStrategy(mActivity))
+                .setCameraStrategy(new CameraUvcStrategy(mActivity, mDeviceId))
                 .setCameraRequest(cameraReq)
                 .setDefaultRotateType(RotateType.ANGLE_0)
                 .openDebug(true)
