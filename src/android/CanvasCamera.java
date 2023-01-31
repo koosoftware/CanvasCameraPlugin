@@ -122,7 +122,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private CameraClient mAndroidUSBCameraClient = null;
     private MultiCameraClient mCameraClient = null;
     private HashMap<Integer, MultiCameraClient.Camera> mCameraMap = new HashMap<>();
-    private String mDeviceId = null;
+    private Integer mDeviceId = null;
 
     @Override
     public String getFilenameSuffix() {
@@ -855,15 +855,17 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         try {
             JSONObject joOptions = args.getJSONObject(0);
             parseOptions(joOptions);
+
+            try {
+                mDeviceId = joOptions.getInt("deviceId");
+            } catch (Exception e) {}
+
         } catch (Exception e) {
             if (LOGGING) Log.e(TAG, "Options parsing error : " + e.getMessage());
             mStartCaptureCallbackContext.sendPluginResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION, getPluginResultMessage(e.getMessage())));
             return;
         }
 
-        if (joOptions.deviceId != null) {
-            mDeviceId = joOptions.deviceId;
-        }
         startCapture(mStartCaptureCallbackContext);
     }
 
