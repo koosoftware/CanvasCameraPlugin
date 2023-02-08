@@ -148,8 +148,8 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                 JSONObject images = new JSONObject();
 
                 // Creating fullsize image.
-                //byte[] fullsizeData = dataToJpeg(data, mPreviewSize.width, mPreviewSize.height);
-                byte[] fullsizeData = dataToJpeg(data, mCaptureWidth, mCaptureHeight);
+                byte[] fullsizeData = dataToJpeg(data, mPreviewSize.width, mPreviewSize.height);
+                //byte[] fullsizeData = dataToJpeg(data, mCaptureWidth, mCaptureHeight);
 
                 fullsizeData = getResizedAndRotatedImage(fullsizeData, mCanvasWidth, mCanvasHeight, displayOrientation);
 
