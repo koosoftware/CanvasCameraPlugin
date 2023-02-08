@@ -149,7 +149,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
                 // Creating fullsize image.
                 //byte[] fullsizeData = dataToJpeg(data, mPreviewSize.width, mPreviewSize.height);
-                byte[] fullsizeData = dataToJpeg(data, 640, 480);
+                byte[] fullsizeData = dataToJpeg(data, mCaptureWidth, mCaptureHeight);
 
                 fullsizeData = getResizedAndRotatedImage(fullsizeData, mCanvasWidth, mCanvasHeight, displayOrientation);
 
@@ -1342,8 +1342,8 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private CameraClient getAndroidUSBCameraClient() {
         CameraRequest cameraReq = new CameraRequest.Builder()
                 .setFrontCamera(false)
-                .setPreviewWidth(640)
-                .setPreviewHeight(480)
+                .setPreviewWidth(mCaptureWidth)
+                .setPreviewHeight(mCaptureHeight)
                 .create();
 
         return CameraClient.newBuilder(mActivity)
@@ -1872,8 +1872,8 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                         Log.e(TAG, "Cannot put data.preview.height into JSON result : " + e.getMessage());
                 }
             } else {
-                preview.put("width", 640);
-                preview.put("height", 480);
+                preview.put("width", mCaptureWidth);
+                preview.put("height", mCaptureHeight);
             }
 
             JSONObject camera = new JSONObject();
