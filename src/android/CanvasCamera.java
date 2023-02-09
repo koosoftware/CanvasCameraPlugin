@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import com.jiangdg.ausbc.CameraClient;
 import com.jiangdg.ausbc.callback.IPreviewDataCallBack;
 import com.jiangdg.ausbc.camera.bean.CameraRequest;
+import com.jiangdg.ausbc.camera.bean.PreviewSize;
 import com.jiangdg.ausbc.render.env.RotateType;
 import com.jiangdg.ausbc.camera.CameraUvcStrategy;
 import com.jiangdg.ausbc.MultiCameraClient;
