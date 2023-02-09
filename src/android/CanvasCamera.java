@@ -462,6 +462,8 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
                         mAndroidUSBCameraClient.openCamera(camView, false);
 
+                        List<PreviewSize> lstPreviewSize = mAndroidUSBCameraClient.getAllPreviewSizes(null);
+
                         mAndroidUSBCameraClient.addPreviewDataCallBack(mPreviewDataCallBack);
 
                         mFileId = 0;
