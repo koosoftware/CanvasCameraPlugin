@@ -1351,7 +1351,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
         return CameraClient.newBuilder(mActivity)
                 .setEnableGLES(true)
-                .setRawImage(true)
+                .setRawImage(false)
                 .setCameraStrategy(new CameraUvcStrategy(mActivity, mDeviceId))
                 .setCameraRequest(cameraReq)
                 .setDefaultRotateType(RotateType.ANGLE_0)
