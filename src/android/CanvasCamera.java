@@ -1345,13 +1345,13 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private CameraClient getAndroidUSBCameraClient() {
         CameraRequest cameraReq = new CameraRequest.Builder()
                 .setFrontCamera(false)
-                .setPreviewWidth(1280)
-                .setPreviewHeight(720)
+                .setPreviewWidth(mCaptureWidth)
+                .setPreviewHeight(mCaptureHeight)
                 .create();
 
         return CameraClient.newBuilder(mActivity)
                 .setEnableGLES(true)
-                .setRawImage(false)
+                .setRawImage(true)
                 .setCameraStrategy(new CameraUvcStrategy(mActivity, mDeviceId))
                 .setCameraRequest(cameraReq)
                 .setDefaultRotateType(RotateType.ANGLE_0)
