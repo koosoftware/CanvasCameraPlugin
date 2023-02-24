@@ -4,6 +4,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.koosoftware.AndroidUSBCamera:libausbc:1f2e2041cb'
-    implementation 'com.github.koosoftware.AndroidUSBCamera:libuvc:1f2e2041cb'
+    implementation 'com.github.koosoftware.AndroidUSBCamera:libausbc:8f3a33d43a'
+    implementation 'com.github.koosoftware.AndroidUSBCamera:libuvc:8f3a33d43a'
 }
