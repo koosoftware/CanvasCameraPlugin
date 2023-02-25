@@ -672,7 +672,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
         if (mPreviewing && mTextureView != null) {
-            startCamera();
+            //startCamera();
         }
     }
 
