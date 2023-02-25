@@ -448,10 +448,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
             
             if (mCameraFacing == -1) {
                 // Android USB Camera
-                if (mAndroidUSBCameraClient == null) {
-                    mAndroidUSBCameraClient = getAndroidUSBCameraClient();
-                }
-
+                mAndroidUSBCameraClient = getAndroidUSBCameraClient();
                 if (mAndroidUSBCameraClient != null) {
                     mTextureView.setVisibility(View.INVISIBLE);
                     mTextureView.setAlpha(0);
