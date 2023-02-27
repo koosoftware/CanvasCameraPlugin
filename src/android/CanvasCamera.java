@@ -571,7 +571,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
             mCameraMap.put(device.getDeviceId(), multiCam);
             //onCameraAttached(this);
 
-            mCameraClient.requestPermission(device);
+            //mCameraClient.requestPermission(device);
         }
 
         @Override
