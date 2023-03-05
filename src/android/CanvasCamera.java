@@ -467,10 +467,12 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                         mFileId = 0;
 
                         mPreviewing = true;
+                        mAndroidUSBCameraClient.resetMDeviceId();
                         if (LOGGING) Log.i(TAG, "Android USB Camera client started.");
 
                     } catch (Exception e) {
                         mPreviewing = false;
+                        mAndroidUSBCameraClient.resetMDeviceId();
                         if (LOGGING) Log.e(TAG, "Failed to init preview: " + e.getMessage());
                         stopCamera();
                     }
