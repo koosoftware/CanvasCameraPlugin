@@ -460,8 +460,6 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
 
                         mAndroidUSBCameraClient.openCamera(camView, false);
 
-                        mAndroidUSBCameraClient.resetMDeviceId();
-
                         //List<PreviewSize> lstPreviewSize = mAndroidUSBCameraClient.getAllPreviewSizes(null);
 
                         mAndroidUSBCameraClient.addPreviewDataCallBack(mPreviewDataCallBack);
@@ -469,6 +467,8 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                         mFileId = 0;
 
                         mPreviewing = true;
+
+                        mAndroidUSBCameraClient.resetMDeviceId();
                         
                         if (LOGGING) Log.i(TAG, "Android USB Camera client started.");
 
