@@ -124,6 +124,7 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
     private MultiCameraClient mCameraClient = null;
     private HashMap<Integer, MultiCameraClient.Camera> mCameraMap = new HashMap<>();
     private Integer mDeviceId = null;
+    private static CameraUvcStrategy mCameraUvcStrategy = null;
 
     @Override
     public String getFilenameSuffix() {
@@ -1351,10 +1352,17 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
                 .setPreviewHeight(mCaptureHeight)
                 .create();
 
+        if (mCameraUvcStrategy != null) {
+            mCameraUvcStrategy.unRegister();
+            mCameraUvcStrategy.close();
+            mCameraUvcStrategy = null;
+        }
+        mCameraUvcStrategy = new CameraUvcStrategy(mActivity, mDeviceId);
+
         return CameraClient.newBuilder(mActivity)
                 .setEnableGLES(true)
                 .setRawImage(true)
-                .setCameraStrategy(new CameraUvcStrategy(mActivity, mDeviceId))
+                .setCameraStrategy(mCameraUvcStrategy)
                 .setCameraRequest(cameraReq)
                 .setDefaultRotateType(RotateType.ANGLE_0)
                 .openDebug(true)
