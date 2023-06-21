@@ -582,9 +582,11 @@ public class CanvasCamera extends CordovaPlugin implements CanvasCameraInterface
         @Override
         public void onDetachDec(UsbDevice device) {
             MultiCameraClient.Camera currMultiCam = mCameraMap.get(device.getDeviceId());
-            currMultiCam.setUsbControlBlock(null);
-            mCameraMap.remove(device.getDeviceId());
-            //onCameraDetached(this);
+            if (currMultiCam != null) {
+                currMultiCam.setUsbControlBlock(null);
+                mCameraMap.remove(device.getDeviceId());
+                //onCameraDetached(this);
+            }
         }
 
         @Override
